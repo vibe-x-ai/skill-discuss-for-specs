@@ -1,0 +1,23 @@
+# Version
+version: "1.0.0"
+
+# Precipitation reminder configuration
+stale_detection:
+  enabled: true
+  max_stale_rounds: 3      # Rounds without precipitation before reminder
+  
+# Hook configuration
+hooks:
+  post_response: true      # Run checks after each response
+  auto_init_config: true   # Auto-initialize config on first run
+  
+# Output configuration
+output:
+  outline_format: "markdown"  # Outline format
+  doc_template: "standard"    # Document template
+  
+# Path configuration
+paths:
+  discuss_dir: "discuss"      # Discussion directory
+  decisions_dir: "decisions"  # Decision documents directory
+  templates_dir: "templates"  # Template directory

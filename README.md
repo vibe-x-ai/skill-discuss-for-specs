@@ -10,7 +10,7 @@ An AI-powered discussion facilitation system that helps generate high-quality sp
 
 ## 💡 The Problem
 
-In **Spec Driven Development (SDD)**, generating high-quality specifications is a well-known bottleneck:
+In **Spec Driven Development (SDD)**, generating high-quality specifications is a well-known challenge:
 
 - **Good Specs are powerful**: Complete, rich specifications dramatically improve code generation quality, task completion rates, and enable solving higher complexity problems
 - **But creating them is hard**: Generating comprehensive, well-thought-out Specs efficiently remains difficult and cognitively demanding
@@ -58,109 +58,112 @@ Flexible and adaptive to your workflow:
 **Without Discussion Mode** - You drive everything:
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                                                                             │
-│  You ──────►  "I need to design a caching system. I'm thinking about       │
-│               using Redis, but I'm not sure about the TTL strategy.         │
-│               Should I use lazy expiration or active expiration?            │
-│               Also, what about cache invalidation patterns? And             │
-│               I need to consider the read/write ratio..."                   │
-│                                                                             │
-│               (You must think of all questions yourself)                    │
-│               (You must structure your own thoughts)                        │
-│               (You must drive the conversation)                             │
-│                         │                                                   │
-│                         ▼                                                   │
-│  Agent ────►  [Responds to what you asked]                                  │
-│                         │                                                   │
-│                         ▼                                                   │
-│  You ──────►  "OK, but what about... wait, I forgot to ask about..."       │
-│                                                                             │
-│               (You need to remember everything)                             │
-│               (You need to discover all edge cases)                         │
-│               (You might miss important aspects)                            │
-│                         │                                                   │
-│                         ▼                                                   │
-│                       .....                                                 │
-│                                                                             │
-│  😓 HIGH cognitive load: You think, you ask, you track, you remember       │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
+You ──────►  "I need to design a caching system. I'm thinking about
+             using Redis, but I'm not sure about the TTL strategy.
+             Should I use lazy expiration or active expiration?
+             Also, what about cache invalidation patterns? And
+             I need to consider the read/write ratio..."
+
+             (You must think of all questions yourself)
+             (You must structure your own thoughts)
+             (You must drive the conversation)
+                       │
+                       ▼
+Agent ────►  [Responds to what you asked]
+                       │
+                       ▼
+You ──────►  "OK, but what about... wait, I forgot to ask about..."
+
+             (You need to remember everything)
+             (You need to discover all edge cases)
+             (You might miss important aspects)
+                       │
+                       ▼
+                     .....
+
+😓 HIGH cognitive load: You think, you ask, you track, you remember
 ```
 
 **With Discussion Mode** - Agent drives, you decide:
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                                                                             │
-│  You ──────►  "Design a caching system"  (That's it. Just the topic.)      │
-│                         │                                                   │
-│                         ▼                                                   │
-│  Agent ────►  "Let me understand the problem space first.                   │
-│                                                                             │
-│               💡 What's the primary driver for caching?                     │
-│                  - Performance optimization?                                │
-│                  - Cost reduction?                                          │
-│                  - Reliability improvement?                                 │
-│                                                                             │
-│               💡 I notice we should clarify the read/write ratio early -   │
-│                  this fundamentally affects architecture choices.           │
-│                                                                             │
-│               ❓ Is this more read-heavy or write-heavy?"                   │
-│                         │                                                   │
-│                         ▼                                                   │
-│  You ──────►  "Read-heavy, for API responses"  (Simple answer)             │
-│                         │                                                   │
-│                         ▼                                                   │
-│  Agent ────►  "Good. For read-heavy API caching, there's something you     │
-│               might not have considered:                                    │
-│                                                                             │
-│               💡 Cache-aside vs Read-through patterns have very different  │
-│                  invalidation complexity. Let me explain the tradeoffs...  │
-│                                                                             │
-│               ┌────────────── Progress Tracked ──────────────┐             │
-│               │ ✅ Confirmed: Read-heavy API caching         │             │
-│               │ 🔄 Discussing: Caching pattern selection     │             │
-│               │ 📋 Pending: TTL strategy, Invalidation       │             │
-│               └──────────────────────────────────────────────┘"            │
-│                         │                                                   │
-│                         ▼                                                   │
-│  You ──────►  "The first one"  (Simple choice)                             │
-│                         │                                                   │
-│                         ▼                                                   │
-│                       .....                                                 │
-│                                                                             │
-│  😊 LOW cognitive load: Agent thinks, Agent asks, Agent tracks, You decide │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
+You ──────►  "Design a caching system"  (That's it. Just the topic.)
+                       │
+                       ▼
+Agent ────►  "Let me understand the problem space first.
+
+             💡 What's the primary driver for caching?
+                - Performance optimization?
+                - Cost reduction?
+                - Reliability improvement?
+
+             💡 I notice we should clarify the read/write ratio early -
+                this fundamentally affects architecture choices.
+
+             ❓ Is this more read-heavy or write-heavy?"
+                       │
+                       ▼
+You ──────►  "Read-heavy, for API responses"  (Simple answer)
+                       │
+                       ▼
+Agent ────►  "Good. For read-heavy API caching, there's something you
+             might not have considered:
+
+             💡 Cache-aside vs Read-through patterns have very different
+                invalidation complexity. Let me explain the tradeoffs...
+
+             ┌────────────── Progress Tracked ──────────────┐
+             │ ✅ Confirmed: Read-heavy API caching         │
+             │ 🔄 Discussing: Caching pattern selection     │
+             │ 📋 Pending: TTL strategy, Invalidation       │
+             └──────────────────────────────────────────────┘"
+                       │
+                       ▼
+You ──────►  "The first one"  (Simple choice)
+                       │
+                       ▼
+                     .....
+
+😊 LOW cognitive load: Agent thinks, Agent asks, Agent tracks, You decide
 ```
 
 ### Output Comparison
 
+| ❌ Without Discussion Mode | ✅ With Discussion Mode |
+|:--------------------------|:-----------------------|
+| 📜 Just chat history | 📁 `discuss/caching-system/` |
+| (scroll up to find things) | ├── 📋 `outline.md` (live progress) |
+| (info scattered in conversation) | ├── 📊 `meta.yaml` (round count) |
+| • Decision 1... somewhere | └── 📄 `decisions/` |
+| • Decision 2... maybe forgot | &nbsp;&nbsp;&nbsp;&nbsp;├── `01-cache-pattern.md` |
+| • Decision 3... which round? | &nbsp;&nbsp;&nbsp;&nbsp;├── `02-storage-choice.md` |
+| • Did we cover everything? | &nbsp;&nbsp;&nbsp;&nbsp;└── `03-ttl-strategy.md` |
+| • What's still pending? | &nbsp;&nbsp;&nbsp;&nbsp;└── (each decision archived separately) |
+|  |  |
+| ❌ No structure | ✅ Structured & searchable |
+| ❌ Easy to lose track | ✅ Nothing lost |
+| ❌ Hard to resume later | ✅ Resume anytime |
+
+---
+
+## 🔍 Discussion Mode vs. Specs
+
+Discussion Mode is **not a replacement for Specs** — it's the **upstream decision layer** that makes Specs easier to write.
+
+|  | Discussion Mode | Specs |
+|--|-----------------|-------|
+| **Focus** | Process (explore, decide) | Artifact (document, execute) |
+| **Core question** | "What to decide & why?" | "What to build & how?" |
+| **Primary output** | `outline.md` + `decisions/` | Structured spec document |
+| **When to use** | Uncertainty is high | Decisions are clear |
+
+### Workflow in SDD
+
 ```
-┌─────────────────────────────────────┐     ┌─────────────────────────────────────┐
-│         WITHOUT DISCUSSION          │     │          WITH DISCUSSION            │
-├─────────────────────────────────────┤     ├─────────────────────────────────────┤
-│                                     │     │                                     │
-│   📜 Just chat history              │     │   📁 discuss/caching-system/        │
-│      (scroll up to find things)     │     │      │                              │
-│                                     │     │      ├── 📋 outline.md              │
-│   • Decision 1... somewhere         │     │      │   (live progress, all Qs)    │
-│   • Decision 2... maybe forgot      │     │      │                              │
-│   • Decision 3... which round?      │     │      ├── 📊 meta.yaml               │
-│   • Did we cover everything?        │     │      │   (round count, sync status) │
-│   • What's still pending?           │     │      │                              │
-│                                     │     │      └── 📄 decisions/              │
-│   ❌ No structure                   │     │          ├── 01-cache-pattern.md    │
-│   ❌ Easy to lose track             │     │          ├── 02-storage-choice.md   │
-│   ❌ Hard to resume later           │     │          └── 03-ttl-strategy.md     │
-│                                     │     │                                     │
-│                                     │     │   ✅ Structured & searchable        │
-│                                     │     │   ✅ Nothing lost                   │
-│                                     │     │   ✅ Resume anytime                 │
-│                                     │     │                                     │
-└─────────────────────────────────────┘     └─────────────────────────────────────┘
+Discuss → Precipitate decisions → Generate/update Spec → Implement → (loop back if needed)
 ```
+
+This project is **tool-agnostic**: combine it with any Spec template, IDE workflow, or spec generator you already use.
 
 ---
 
@@ -168,13 +171,13 @@ Flexible and adaptive to your workflow:
 
 Use Discussion Mode whenever you need to clarify and refine ideas:
 
-| Scenario | How It Helps |
-|----------|--------------|
-| **Technical Solution Design** | Explore architectures, evaluate tradeoffs, reach clear decisions |
-| **Problem Diagnosis** | Systematically analyze issues, track hypotheses, document findings |
-| **Technology Selection** | Compare options, assess fit, make informed choices |
-| **Product Design** | Refine requirements, explore user flows, document decisions |
-| **Spec Generation** | Transform rough ideas into comprehensive, actionable specifications |
+| Scenario | When to Use | How It Helps |
+|----------|-------------|--------------|
+| **Technical Solution Design** | "I need to design a caching system, how should I do it?" | Explore architectures, evaluate tradeoffs, reach clear decisions |
+| **Problem Diagnosis** | "There's a performance issue online, how should I solve it?" | Systematically analyze issues, track hypotheses, document findings |
+| **Technology Selection** | "Redis or Memcached? Should we use Kafka?" | Compare options, assess fit, make informed choices |
+| **Product Design** | "How should the user flow for this feature be designed?" | Refine requirements, explore user flows, document decisions |
+| **Spec Generation** | "I have a technical idea but haven't thought it through, how to refine it?" | Transform rough ideas into comprehensive, actionable specifications |
 
 ---
 
@@ -277,7 +280,7 @@ Global configuration is automatically initialized on first run:
 stale_detection:
   enabled: true
   max_stale_rounds: 3      # Rounds before reminder
-  
+
 hooks:
   post_response: true
   auto_init_config: true

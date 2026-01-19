@@ -1,5 +1,5 @@
 ---
-name: disc-coordinator
+name: discuss-coordinator
 description: "Discussion mode coordinator managing output strategy, problem tracking, and precipitation rules"
 metadata:
   version: "1.0.0"

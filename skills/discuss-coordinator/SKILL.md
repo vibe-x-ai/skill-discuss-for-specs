@@ -53,14 +53,12 @@ After updating outline:
 ```
 ✅ Outline updated (R[N])
 
-## 📊 This Round
+## This Round
+- Focus: [current focus topic]
+- New: [brief summary of new content]
+- Confirmed/Rejected: [brief summary of decisions, if any]
 
-➕ New: [Brief summary of new content]
-✅ Confirmed: [Brief summary of confirmed decisions]
-🔄 Adjusted: [Brief summary of adjustments]
-
-## ❓ Next Focus
-
+## Next
 [1-2 key questions that need answers]
 
 ---
@@ -78,22 +76,26 @@ Update `outline.md` after each significant discussion turn.
 
 ### Decision Tracking in meta.yaml
 
-When you confirm a decision, add it to `meta.yaml`:
+When you confirm or reject a decision, add it to `meta.yaml`:
 
 ```yaml
 decisions:
   - id: D1
     title: "Clear Decision Title"
-    status: confirmed
+    status: confirmed          # or "rejected"
     confirmed_at: [current_round]
     doc_path: null              # Start as null
 ```
 
-**After creating decision document**, update `doc_path`:
+**After creating decision document** (in `decisions/` directory), update `doc_path`:
 
 ```yaml
     doc_path: "decisions/01-decision-title.md"
 ```
+
+**Note**: Both confirmed and rejected decisions get documented and go in `decisions/` directory. Rejected decisions should explain why they were rejected and under what conditions they might be reconsidered.
+
+For reference materials and analysis that don't represent decisions, you can reference files in `notes/` directory from the outline's Archive section.
 
 **This is your ONLY process responsibility** - Hooks handle the rest.
 
@@ -137,9 +139,15 @@ A decision point has reached consensus when:
 
 ### When You Recognize Consensus
 
-1. Move content to "Confirmed" section in outline
-2. Add decision record to `meta.yaml`
-3. Create decision document (or note if deferring)
+1. Move content to "Confirmed" or "Rejected" section in outline
+2. Add decision record to `meta.yaml` (with appropriate status)
+3. Create decision document in `decisions/` directory
+4. Update `doc_path` in `meta.yaml`
+
+### When to Use Notes vs Decisions
+
+- **Decisions** (`decisions/` directory): Confirmed or rejected choices that were made
+- **Notes** (`notes/` directory): Background research, analysis, reference materials that inform but aren't decisions themselves
 
 ---
 
@@ -182,5 +190,5 @@ For detailed formats and specifications, see:
 
 ---
 
-**Version**: 1.0.0  
+**Version**: 0.1.0  
 **Last Updated**: 2026-01-17

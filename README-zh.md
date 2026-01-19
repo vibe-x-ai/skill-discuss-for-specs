@@ -181,7 +181,7 @@ AI ────►  "很好。对于读多的 API 缓存，你可能没考虑过
 
 ## ✨ 技术特性
 
-- **双技能架构**：协调(`disc-coordinator`)和输出(`disc-output`)的清晰分离
+- **双技能架构**：协调(`discuss-coordinator`)和输出(`discuss-output`)的清晰分离
 - **智能沉淀**：自动检测未沉淀决策，可配置提醒
 - **基于 Hook 的自动化**：流程工作（轮次计数、状态检查）由 Python 脚本处理，而非 AI
 - **多平台支持**：Claude Code（就绪）、Cursor 和 VS Code（计划中）
@@ -224,8 +224,8 @@ Agent 将引导你进行结构化对话，自动追踪决策和进度。
 ```
 skill-discuss-for-specs/
 ├── skills/              # 📝 技能指令（供 AI 使用的 Markdown）
-│   ├── disc-coordinator/    # 讨论协调与追踪
-│   └── disc-output/         # 大纲渲染与文档生成
+│   ├── discuss-coordinator/    # 讨论协调与追踪
+│   └── discuss-output/         # 大纲渲染与文档生成
 ├── hooks/               # ⚡ 自动化脚本（Python）
 │   ├── post-response/       # 轮次计数、停滞检测
 │   └── common/              # 共享工具
@@ -243,8 +243,8 @@ skill-discuss-for-specs/
 
 ### Skills（给 AI 的 Markdown 指令）
 
-- **disc-coordinator**：促进讨论流程、追踪问题和趋势、识别共识
-- **disc-output**：渲染大纲、管理文件、生成决策文档
+- **discuss-coordinator**：促进讨论流程、追踪问题和趋势、识别共识
+- **discuss-output**：渲染大纲、管理文件、生成决策文档
 
 ### Hooks（Python 脚本）
 
@@ -274,7 +274,7 @@ AI 专注于理解、分析和引导讨论。机械性任务（计数、检查�
 全局配置在首次运行时自动初始化：
 
 ```yaml
-# ~/.claude/skills/disc-config.yaml (Claude Code)
+# ~/.claude/skills/discuss-config.yaml (Claude Code)
 stale_detection:
   enabled: true
   max_stale_rounds: 3      # 提醒前的轮次数
@@ -328,6 +328,6 @@ python -m pytest tests/
 
 ---
 
-**版本**：1.0.0
+**版本**：0.1.0
 **状态**：V1 - 基础版本
 **理念**：通过 AI 引导的结构化讨论，将粗略想法转化为可执行规范。

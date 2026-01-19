@@ -70,13 +70,13 @@ skill-discuss-for-specs/
 ├── pyproject.toml            # Python project configuration
 │
 ├── skills/                   # 📝 Skills (Markdown)
-│   ├── disc-coordinator/
+│   ├── discuss-coordinator/
 │   │   ├── SKILL.md          # Core: Coordinator Skill instructions
 │   │   └── references/       # Reference materials
 │   │       ├── decision-rules.md
 │   │       └── problem-lifecycle.md
 │   │
-│   └── disc-output/
+│   └── discuss-output/
 │       ├── SKILL.md          # Core: Output Skill instructions
 │       └── references/
 │           ├── outline-format.md

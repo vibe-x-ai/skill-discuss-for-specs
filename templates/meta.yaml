@@ -1,0 +1,10 @@
+# Discussion metadata
+topic: "[Topic Name]"
+created: YYYY-MM-DD
+current_round: 1
+
+# Staleness configuration
+max_stale_rounds: 3
+
+# Decision sync status
+decisions: []

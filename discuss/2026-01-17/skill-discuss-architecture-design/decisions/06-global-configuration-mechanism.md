@@ -55,7 +55,7 @@ Continue with detection logic...
 ### Configuration File Structure
 
 ```yaml
-# ~/.claude/skills/disc-config.yaml (or similar location)
+# ~/.claude/skills/discuss-config.yaml (or similar location)
 
 # Version
 version: "1.0.0"
@@ -123,7 +123,7 @@ When multiple configuration sources exist:
 ```
 1. Project-specific config (./discuss/.config)
    ↓ overrides
-2. User config (~/.claude/skills/disc-config.yaml)
+2. User config (~/.claude/skills/discuss-config.yaml)
    ↓ overrides
 3. Default config (built-in)
 ```

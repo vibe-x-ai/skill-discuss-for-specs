@@ -130,7 +130,7 @@ import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
     let disposable = vscode.commands.registerCommand(
-        'disc-coordinator.startDiscussion',
+        'discuss-coordinator.startDiscussion',
         () => {
             // Access VS Code API
             vscode.window.showInformationMessage('Discussion started');

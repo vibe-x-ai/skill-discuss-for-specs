@@ -44,13 +44,13 @@ Design a Skill architecture that:
 ### Chosen Solution
 **2-Skill Architecture**: Split into Coordinator Layer + Output Layer
 
-**Layer 1: Coordinator (`disc-coordinator`)**
+**Layer 1: Coordinator (`discuss-coordinator`)**
 - Process coordination
 - Problem tracking
 - Trend tracking
 - Decision precipitation rules
 
-**Layer 2: Output (`disc-output`)**
+**Layer 2: Output (`discuss-output`)**
 - Outline rendering
 - File management
 - Document generation

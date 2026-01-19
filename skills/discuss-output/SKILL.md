@@ -31,63 +31,44 @@ You are the **Output Layer**, responsible for rendering structured outlines, man
 
 ### Structure
 
-Use this order (by priority):
+Use this **state-priority** order:
 
 ```markdown
-# 🎯 [Discussion Topic]
+# Discussion: [Topic]
 
-| 📅 Date | ⏱️ Round | Status |
-|---------|---------|-------|
-| YYYY-MM-DD | R[N] | [emoji] [status] |
+> Status: In Progress | Round: R[N] | Date: YYYY-MM-DD
 
----
+## 🔴 Current Focus
 
-## 📊 Current Status
+- **[Primary question being discussed right now]**
+- **[Secondary question if applicable]**
 
+## 🟡 Pending
+
+- [ ] Question A
+- [ ] Question B
+
+## ✅ Confirmed
+
+- Decision title → [D01-xxx](./decisions/D01-xxx.md)
+
+## ❌ Rejected
+
+- Decision title (reason) → [D02-xxx](./decisions/D02-xxx.md)
+
+## 📁 Archive
+
+| Question | Conclusion | Details |
+|----------|-----------|---------|
+| Topic X | Brief conclusion | [→ notes](./notes/xxx.md) |
 ```
-[ASCII trend chart]
-```
 
----
+### Key Principles
 
-## 📌 Session Recovery Guide
-
----
-
-## ❓ Questions
-
-```
-[Problem list with status indicators]
-```
-
----
-
-## 🔄 Discussing (N)
-
----
-
-## 🧪 Exploring (N)
-
----
-
-## ⏸️ Deferred (N)
-
----
-
-## Below: Completed Content
-
----
-
-### ✅ Confirmed (N)
-
----
-
-### ❌ Rejected (N)
-
----
-
-### 📄 Detailed Documents
-```
+1. **State-first ordering**: Current Focus at top, Archive at bottom
+2. **High information density**: Outline is an index, not a content container
+3. **Link to details**: Use `decisions/` for decided items, `notes/` for reference materials
+4. **Checkbox for pending**: Makes it clear what needs discussion
 
 ### Visual Standards
 
@@ -99,29 +80,19 @@ Use this order (by priority):
 - Code blocks: ` ```  ```
 - Bold: `**text**`
 - Inline code: `` `text` ``
+- Checkboxes: `- [ ]`, `- [x]`
 
-**❌ DON'T Use Outside Code Blocks**:
+**❌ DON'T Use**:
 - Unicode box drawing: `╭╮╰╯│═─┌┐└┘`
-- Custom ASCII art (except in code blocks for trend charts)
+- Custom ASCII art
+- Emoji overuse (keep minimal)
+- Complex nested structures
 
-### Trend Chart Format
+### Content Density
 
-Always put in code blocks:
-
-````markdown
-## 📊 Current Status
-
-```
-Pending: 3    Confirmed: 5    Rejected: 1
-
- R1    R2    R3    R4
-  │     │     │     │
-4 ●─────●     │     │
-  │     │╲    │     │
-3 │     │ ╲───●─────● ← Current
-  │     │     │     │
-```
-````
+- **Outline = Index**: Keep entries concise (1-2 sentences max)
+- **Details = Separate files**: Move extensive content to `decisions/` or `notes/`
+- **Links > Duplication**: Always link to detailed documents rather than repeat content
 
 ---
 
@@ -130,19 +101,25 @@ Pending: 3    Confirmed: 5    Rejected: 1
 ### Directory Structure
 
 ```
-discuss/YYYY-MM-DD/[topic]-discussion/
-├── outline.md
-├── meta.yaml
-├── decisions/
-├── references/
-└── assets/
+discuss/YYYY-MM-DD/[topic]/
+├── outline.md          # High-density index
+├── meta.yaml           # Metadata
+├── decisions/          # Decision documents (confirmed & rejected)
+│   ├── D01-xxx.md
+│   └── D02-xxx.md
+└── notes/              # Reference materials & analysis
+    └── topic-analysis.md
 ```
+
+**Notes on directory usage**:
+- `decisions/`: All decisions (both confirmed and rejected) go here
+- `notes/`: Background research, analysis, comparisons that aren't decisions themselves
 
 ### meta.yaml Format
 
 ```yaml
 # Discussion metadata
-topic: [Discussion Topic]
+topic: "[Topic Name]"
 created: YYYY-MM-DD
 current_round: N
 
@@ -153,10 +130,12 @@ max_stale_rounds: 3
 decisions:
   - id: D1
     title: "[Decision Title]"
-    status: confirmed
+    status: confirmed      # or "rejected"
     confirmed_at: N
-    doc_path: null  # or "decisions/XX-title.md"
+    doc_path: null         # or "decisions/D01-title.md"
 ```
+
+**Important**: Both confirmed and rejected decisions are tracked in the same list. The `status` field distinguishes them.
 
 ---
 
@@ -244,18 +223,23 @@ decisions:
 
 ### Decisions
 
-Format: `XX-decision-title.md`
-- `XX`: Sequential number (01, 02, 03...)
+Format: `DXX-decision-title.md` (note: using D prefix for Decision)
+- `DXX`: Sequential number with D prefix (D01, D02, D03...)
 - `decision-title`: Lowercase, hyphen-separated
 
 Examples:
-- `01-skill-architecture.md`
-- `02-skill-naming.md`
-- `03-intelligence-vs-process-separation.md`
+- `D01-skill-architecture.md`
+- `D02-skill-naming.md`
+- `D03-reject-standalone-tracker.md`
 
-### Research/Analysis (if created)
+### Notes/Reference Materials
 
-Format: `XX-topic.md` in respective directories
+Format: `topic-name.md` (no number prefix needed)
+
+Examples:
+- `spec-kit-analysis.md`
+- `platform-comparison.md`
+- `background-research.md`
 
 ---
 
@@ -264,9 +248,11 @@ Format: `XX-topic.md` in respective directories
 ### Creation Triggers
 
 Create decision document when:
-1. Coordinator moves content to "Confirmed"
+1. Coordinator moves content to "Confirmed" or "Rejected"
 2. User explicitly requests documentation
 3. Hook detects stale decision (>N rounds unprecipitated)
+
+**Note**: Rejected decisions also get documented to explain why they were rejected.
 
 ### Update Triggers
 
@@ -287,5 +273,5 @@ For detailed templates and examples, see:
 
 ---
 
-**Version**: 1.0.0  
+**Version**: 0.1.0  
 **Last Updated**: 2026-01-17

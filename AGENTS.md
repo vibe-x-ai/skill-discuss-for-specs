@@ -19,16 +19,16 @@ This document provides guidance for AI agents working on this project.
 
 | Skill | Responsibility |
 |-------|---------------|
-| `disc-coordinator` | Discussion coordination, problem tracking, trend analysis, precipitation rules |
-| `disc-output` | Outline rendering, file management, document generation |
+| `discuss-coordinator` | Discussion coordination, problem tracking, trend analysis, precipitation rules |
+| `discuss-output` | Outline rendering, file management, document generation |
 
 ### Directory Structure (Mechanism-Based)
 
 ```
 skill-discuss-for-specs/
 ├── skills/              # 📝 Markdown instructions for AI
-│   ├── disc-coordinator/
-│   └── disc-output/
+│   ├── discuss-coordinator/
+│   └── discuss-output/
 ├── hooks/               # ⚡ Python automation scripts
 │   ├── post-response/
 │   └── common/
@@ -42,55 +42,47 @@ skill-discuss-for-specs/
 
 ## 🎯 Key Conventions
 
-### 1. Discussion Mode
+### 1. Skill-Based Architecture
 
-When user requests "discussion mode" or similar:
-1. Create discussion directory: `discuss/YYYY-MM-DD/[topic]-discussion/`
-2. Initialize `outline.md` and `meta.yaml`
-3. Track questions, decisions, and trends
-4. Precipitate confirmed decisions into documents
+This project provides discussion facilitation capabilities through two Skills:
+- `discuss-coordinator`: Handles discussion logic (in `skills/discuss-coordinator/SKILL.md`)
+- `discuss-output`: Handles output formatting (in `skills/discuss-output/SKILL.md`)
 
-### 2. Decision Precipitation
+**To use discussion capabilities**: Load and follow the Skills. All usage details are documented in the SKILL.md files.
 
-When a decision is confirmed:
-1. Move content to "Confirmed" section in outline
-2. Add decision record to `meta.yaml` with `doc_path: null`
-3. Create decision document in `decisions/` directory
-4. Update `doc_path` in `meta.yaml`
+### 2. Data Structures
 
-### 3. Output Strategy
+**Discussion directory**:
+```
+discuss/YYYY-MM-DD/[topic]/
+├── outline.md          # Discussion outline
+├── meta.yaml           # Metadata (see schema below)
+├── decisions/          # Decision documents
+└── notes/              # Reference materials
+```
 
-> **Never duplicate content between files and responses**
+**File naming conventions**:
+- Decisions: `DXX-decision-title.md` (D01, D02, D03...)
+- Notes: `topic-name.md` (no prefix)
 
-| Content | Location | Format |
-|---------|----------|--------|
-| Full outline | `outline.md` file | Complete structure |
-| Response | Chat message | Summary + Δchanges + Analysis |
+### 3. Templates
 
-### 4. File Naming
-
-- Decisions: `XX-decision-title.md` (e.g., `01-skill-architecture.md`)
-- Use lowercase, hyphen-separated names
-- Sequential numbering (01, 02, 03...)
+Templates for new discussions are in `templates/`:
+- `outline.md` - Outline template
+- `meta.yaml` - Metadata template
 
 ## 📁 Important Files
 
 | File | Purpose |
 |------|---------|
-| `skills/disc-coordinator/SKILL.md` | Coordinator skill instructions |
-| `skills/disc-output/SKILL.md` | Output skill instructions |
+| `skills/discuss-coordinator/SKILL.md` | Coordinator skill instructions |
+| `skills/discuss-output/SKILL.md` | Output skill instructions |
 | `config/default.yaml` | Default configuration |
 | `hooks/post-response/check_stale.py` | Stale decision detection |
 | `discuss/*/outline.md` | Active discussion outlines |
 | `discuss/*/meta.yaml` | Discussion metadata |
 
 ## 🔧 Development Guidelines
-
-### Adding New Features
-
-1. **For AI behavior changes**: Update SKILL.md files in `skills/`
-2. **For automation**: Add Python scripts in `hooks/`
-3. **For new platforms**: Add directory in `platforms/` with build/install scripts
 
 ### Building for Platforms
 
@@ -111,6 +103,8 @@ python -m pytest tests/
 
 ## 📊 meta.yaml Schema
 
+Reference for understanding/parsing discussion metadata:
+
 ```yaml
 # Discussion metadata
 topic: "Topic Name"
@@ -120,21 +114,48 @@ current_round: N
 # Staleness configuration
 max_stale_rounds: 3
 
-# Decision sync status
+# Decision tracking
 decisions:
   - id: D1
     title: "Decision Title"
     status: confirmed | rejected
-    confirmed_at: N           # Round when confirmed
-    doc_path: null | "path"   # null = not yet documented
+    confirmed_at: N
+    doc_path: null | "decisions/DXX-xxx.md"
 ```
 
-## ⚠️ Common Pitfalls
+## 🔨 Development Workflows
 
-1. **Don't repeat outline content in responses** - Only show deltas and summaries
-2. **Don't forget to update meta.yaml** - When confirming decisions, add records
-3. **Don't create documents without updating doc_path** - Keep meta.yaml in sync
-4. **Don't mix languages** - Use English for code comments, logs, and documentation
+### Adding New Features
+
+1. **AI behavior changes**: Update `skills/*/SKILL.md`
+2. **Process automation**: Add Python scripts in `hooks/`
+3. **Platform support**: Add directory in `platforms/` with build/install scripts
+4. **Configuration**: Update `config/default.yaml`
+
+### Modifying Skills
+
+Skills are pure Markdown instructions. To modify behavior:
+1. Edit the SKILL.md file
+2. Test with discussion scenarios
+3. Update version number and last updated date
+
+### Hooks Development
+
+Hooks are Python scripts that run automatically:
+- `post-response/`: Run after each AI response
+- `common/`: Shared utilities
+
+**Key modules**:
+- `meta_parser.py`: Parse and manipulate meta.yaml
+- `file_utils.py`: File operations helpers
+
+## ⚠️ Development Pitfalls
+
+1. **Don't put usage instructions in AGENTS.md** - That belongs in SKILL.md
+2. **Don't forget to update meta.yaml schema** - When adding new fields
+3. **Don't modify Skills without testing** - Test with actual discussions first
+4. **Don't break cross-platform compatibility** - Test build scripts for all platforms
+5. **Keep hooks simple** - Complex logic should be in dedicated modules
 
 ## 🔗 Related Resources
 
@@ -144,5 +165,5 @@ decisions:
 
 ---
 
-**Version**: 1.0.0  
-**Last Updated**: 2026-01-18
+**Version**: 0.1.0  
+**Last Updated**: 2026-01-19

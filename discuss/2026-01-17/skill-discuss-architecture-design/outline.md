@@ -46,7 +46,7 @@ If you're a new session, please read the following to quickly restore context:
 
 ```
 🟢 Q1   Skill Granularity → 2 Skills (Coordinator Layer + Output Layer)
-🟢 Q1.1 Skill Naming → disc-coordinator + disc-output
+🟢 Q1.1 Skill Naming → discuss-coordinator + discuss-output
 🟢 Q5   Recording Mechanism → Hook-based, Agent focuses on discussion
 🟢 Q6   Responsibility Boundary → Intelligence work to Agent, process work to Hook
 🟢 Q7   Precipitation Detection → meta.yaml structured annotation + script checking
@@ -92,8 +92,8 @@ If you're a new session, please read the following to quickly restore context:
 - Output Layer: Rendering + File management + Document generation
 
 **📌 Skill Naming** `#R8` → [See Details](./decisions/02-skill-naming.md)
-- Coordinator Layer: `disc-coordinator`
-- Output Layer: `disc-output`
+- Coordinator Layer: `discuss-coordinator`
+- Output Layer: `discuss-output`
 
 **📌 Design Principle: Intelligence vs Process Separation** `#R5` → [See Details](./decisions/03-intelligence-vs-process-separation.md)
 - Agent focuses on discussion (understanding, analysis, decision-making)

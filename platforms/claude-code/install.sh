@@ -22,8 +22,8 @@ mkdir -p "$CLAUDE_SKILLS_DIR"
 # Install Skills
 echo ""
 echo "📝 Installing Skills..."
-cp -r "$SCRIPT_DIR/build/disc-coordinator" "$CLAUDE_SKILLS_DIR/"
-cp -r "$SCRIPT_DIR/build/disc-output" "$CLAUDE_SKILLS_DIR/"
+cp -r "$SCRIPT_DIR/build/discuss-coordinator" "$CLAUDE_SKILLS_DIR/"
+cp -r "$SCRIPT_DIR/build/discuss-output" "$CLAUDE_SKILLS_DIR/"
 echo "  ✓ Skills installed to $CLAUDE_SKILLS_DIR"
 
 # TODO: Install Hooks (depends on Claude Code Hook support)
@@ -34,7 +34,7 @@ echo "  ✓ Skills installed to $CLAUDE_SKILLS_DIR"
 # Initialize config
 echo ""
 echo "⚙️ Initializing configuration..."
-CONFIG_FILE="$CLAUDE_SKILLS_DIR/disc-config.yaml"
+CONFIG_FILE="$CLAUDE_SKILLS_DIR/discuss-config.yaml"
 
 if [ -f "$CONFIG_FILE" ]; then
     echo "  ℹ️  Configuration already exists: $CONFIG_FILE"

@@ -1,6 +1,6 @@
 [project]
 name = "skill-discuss-for-specs"
-version = "1.0.0"
+version = "0.1.0"
 description = "Cross-platform AI discussion facilitation system"
 authors = [{name = "Your Name", email = "your.email@example.com"}]
 readme = "README.md"

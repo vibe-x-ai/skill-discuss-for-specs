@@ -42,7 +42,7 @@ Design a multi-platform architecture that:
 **Core Principle**: Content is shared, headers are platform-specific
 
 ```
-skills/disc-coordinator/
+skills/discuss-coordinator/
 ├── SKILL.md              # Main content (no header)
 ├── headers/              # Platform headers
 │   ├── claude-code.yaml
@@ -89,7 +89,7 @@ Header (platform-specific) + Content (shared) = Final output
 **Claude Code Header** (`headers/claude-code.yaml`):
 ```yaml
 ---
-name: disc-coordinator
+name: discuss-coordinator
 description: "Discussion mode coordinator managing output strategy and precipitation rules"
 metadata:
   version: "1.0.0"
@@ -101,7 +101,7 @@ metadata:
 **Cursor Header** (`headers/cursor.yaml`) [hypothetical]:
 ```yaml
 ---
-title: disc-coordinator
+title: discuss-coordinator
 type: agent-skill
 version: "1.0.0"
 ---
@@ -110,7 +110,7 @@ version: "1.0.0"
 **VS Code Extension** (`headers/vscode.json`):
 ```json
 {
-  "name": "disc-coordinator",
+  "name": "discuss-coordinator",
   "displayName": "Discussion Coordinator",
   "description": "Discussion mode coordinator",
   "version": "1.0.0"
@@ -123,15 +123,15 @@ version: "1.0.0"
 # scripts/build.sh
 
 # For Claude Code
-cat skills/disc-coordinator/headers/claude-code.yaml \
-    skills/disc-coordinator/SKILL.md \
-    > platforms/claude-code/skills/disc-coordinator/SKILL.md
+cat skills/discuss-coordinator/headers/claude-code.yaml \
+    skills/discuss-coordinator/SKILL.md \
+    > platforms/claude-code/skills/discuss-coordinator/SKILL.md
 
 # For Cursor (hypothetical)
 python platforms/cursor/transform.py \
-    --input skills/disc-coordinator/SKILL.md \
-    --header skills/disc-coordinator/headers/cursor.yaml \
-    --output platforms/cursor/rules/disc-coordinator.md
+    --input skills/discuss-coordinator/SKILL.md \
+    --header skills/discuss-coordinator/headers/cursor.yaml \
+    --output platforms/cursor/rules/discuss-coordinator.md
 ```
 
 ### Platform Directory Responsibilities
@@ -153,7 +153,7 @@ User runs: ./platforms/claude-code/install.sh
 
 Script does:
 1. Build final SKILL.md (header + content)
-2. Copy to ~/.claude/skills/disc-coordinator/
+2. Copy to ~/.claude/skills/discuss-coordinator/
 3. Copy hooks to appropriate location
 4. Initialize configuration if needed
 ```

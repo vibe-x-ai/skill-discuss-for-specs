@@ -39,7 +39,7 @@ Establish a reasonable default threshold for precipitation reminders while suppo
 ### Configuration Support
 
 ```yaml
-# Global config (disc-config.yaml or similar)
+# Global config (discuss-config.yaml or similar)
 stale_detection:
   enabled: true
   max_stale_rounds: 3      # Configurable threshold

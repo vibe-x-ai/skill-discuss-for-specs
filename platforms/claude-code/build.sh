@@ -13,29 +13,29 @@ echo "Building for Claude Code..."
 
 # Clean build directory
 rm -rf "$BUILD_DIR"
-mkdir -p "$BUILD_DIR/disc-coordinator"
-mkdir -p "$BUILD_DIR/disc-output"
+mkdir -p "$BUILD_DIR/discuss-coordinator"
+mkdir -p "$BUILD_DIR/discuss-output"
 
-# Build disc-coordinator SKILL.md
-echo "  - Building disc-coordinator/SKILL.md"
-cat "$PROJECT_ROOT/skills/disc-coordinator/headers/claude-code.yaml" \
-    "$PROJECT_ROOT/skills/disc-coordinator/SKILL.md" \
-    > "$BUILD_DIR/disc-coordinator/SKILL.md"
+# Build discuss-coordinator SKILL.md
+echo "  - Building discuss-coordinator/SKILL.md"
+cat "$PROJECT_ROOT/skills/discuss-coordinator/headers/claude-code.yaml" \
+    "$PROJECT_ROOT/skills/discuss-coordinator/SKILL.md" \
+    > "$BUILD_DIR/discuss-coordinator/SKILL.md"
 
 # Copy references
-if [ -d "$PROJECT_ROOT/skills/disc-coordinator/references" ]; then
-    cp -r "$PROJECT_ROOT/skills/disc-coordinator/references" "$BUILD_DIR/disc-coordinator/"
+if [ -d "$PROJECT_ROOT/skills/discuss-coordinator/references" ]; then
+    cp -r "$PROJECT_ROOT/skills/discuss-coordinator/references" "$BUILD_DIR/discuss-coordinator/"
 fi
 
-# Build disc-output SKILL.md
-echo "  - Building disc-output/SKILL.md"
-cat "$PROJECT_ROOT/skills/disc-output/headers/claude-code.yaml" \
-    "$PROJECT_ROOT/skills/disc-output/SKILL.md" \
-    > "$BUILD_DIR/disc-output/SKILL.md"
+# Build discuss-output SKILL.md
+echo "  - Building discuss-output/SKILL.md"
+cat "$PROJECT_ROOT/skills/discuss-output/headers/claude-code.yaml" \
+    "$PROJECT_ROOT/skills/discuss-output/SKILL.md" \
+    > "$BUILD_DIR/discuss-output/SKILL.md"
 
 # Copy references
-if [ -d "$PROJECT_ROOT/skills/disc-output/references" ]; then
-    cp -r "$PROJECT_ROOT/skills/disc-output/references" "$BUILD_DIR/disc-output/"
+if [ -d "$PROJECT_ROOT/skills/discuss-output/references" ]; then
+    cp -r "$PROJECT_ROOT/skills/discuss-output/references" "$BUILD_DIR/discuss-output/"
 fi
 
 echo "✓ Claude Code build complete: $BUILD_DIR"

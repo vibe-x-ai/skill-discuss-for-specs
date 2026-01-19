@@ -28,10 +28,10 @@ Choose names that clearly communicate each Skill's role and responsibility.
 
 | Layer | Candidates | Rationale | Decision |
 |-------|-----------|-----------|----------|
-| **Coordinator Layer** | `disc-coordinator` | Continues existing naming, semantically clear | ✅ |
+| **Coordinator Layer** | `discuss-coordinator` | Continues existing naming, semantically clear | ✅ |
 | | `disc-core` | Generic, doesn't convey coordination aspect | ❌ |
 | | `disc-discuss` | Too narrow, missing tracking/coordination | ❌ |
-| **Output Layer** | `disc-output` | More accurate (includes rendering + file management) | ✅ |
+| **Output Layer** | `discuss-output` | More accurate (includes rendering + file management) | ✅ |
 | | `disc-renderer` | Too narrow, missing file/doc management | ❌ |
 | | `disc-writer` | Implies only writing, missing rendering | ❌ |
 
@@ -40,8 +40,8 @@ Choose names that clearly communicate each Skill's role and responsibility.
 ## ✅ Final Decision
 
 ### Chosen Solution
-- **Coordinator Layer**: `disc-coordinator`
-- **Output Layer**: `disc-output`
+- **Coordinator Layer**: `discuss-coordinator`
+- **Output Layer**: `discuss-output`
 
 ### Decision Rationale
 1. **Coordinator**: 

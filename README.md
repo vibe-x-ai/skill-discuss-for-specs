@@ -183,7 +183,7 @@ Use Discussion Mode whenever you need to clarify and refine ideas:
 
 ## ✨ Technical Features
 
-- **2-Skill Architecture**: Clean separation between coordination (`disc-coordinator`) and output (`disc-output`)
+- **2-Skill Architecture**: Clean separation between coordination (`discuss-coordinator`) and output (`discuss-output`)
 - **Intelligent Precipitation**: Automatic detection of unprecipitated decisions with configurable reminders
 - **Hook-Based Automation**: Process work (round counting, state checking) handled by Python scripts, not AI
 - **Multi-Platform Support**: Claude Code (ready), Cursor & VS Code (planned)
@@ -226,8 +226,8 @@ The Agent will guide you through a structured conversation, tracking decisions a
 ```
 skill-discuss-for-specs/
 ├── skills/              # 📝 Skill instructions (Markdown for AI)
-│   ├── disc-coordinator/    # Discussion coordination & tracking
-│   └── disc-output/         # Outline rendering & documentation
+│   ├── discuss-coordinator/    # Discussion coordination & tracking
+│   └── discuss-output/         # Outline rendering & documentation
 ├── hooks/               # ⚡ Automation scripts (Python)
 │   ├── post-response/       # Round counting, stale detection
 │   └── common/              # Shared utilities
@@ -245,8 +245,8 @@ skill-discuss-for-specs/
 
 ### Skills (Markdown Instructions for AI)
 
-- **disc-coordinator**: Facilitates discussion flow, tracks problems and trends, recognizes consensus
-- **disc-output**: Renders outlines, manages files, generates decision documents
+- **discuss-coordinator**: Facilitates discussion flow, tracks problems and trends, recognizes consensus
+- **discuss-output**: Renders outlines, manages files, generates decision documents
 
 ### Hooks (Python Scripts)
 
@@ -276,7 +276,7 @@ The AI focuses on understanding, analyzing, and guiding discussion. Mechanical t
 Global configuration is automatically initialized on first run:
 
 ```yaml
-# ~/.claude/skills/disc-config.yaml (Claude Code)
+# ~/.claude/skills/discuss-config.yaml (Claude Code)
 stale_detection:
   enabled: true
   max_stale_rounds: 3      # Rounds before reminder
@@ -330,6 +330,6 @@ Built on insights from the Claude Skills ecosystem, Spec Driven Development prac
 
 ---
 
-**Version**: 1.0.0  
+**Version**: 0.1.0  
 **Status**: V1 - Foundation  
 **Philosophy**: Transform rough ideas into actionable specifications through AI-guided structured discussion.

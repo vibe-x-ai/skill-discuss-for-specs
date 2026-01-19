@@ -1,5 +1,5 @@
 # Version
-version: "1.0.0"
+version: "0.1.0"
 
 # Precipitation reminder configuration
 stale_detection:
@@ -20,4 +20,5 @@ output:
 paths:
   discuss_dir: "discuss"      # Discussion directory
   decisions_dir: "decisions"  # Decision documents directory
+  notes_dir: "notes"          # Reference materials directory
   templates_dir: "templates"  # Template directory

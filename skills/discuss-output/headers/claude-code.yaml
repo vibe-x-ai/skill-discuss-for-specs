@@ -1,5 +1,5 @@
 ---
-name: disc-output
+name: discuss-output
 description: "Discussion output layer handling outline rendering, file management, and document generation"
 metadata:
   version: "1.0.0"

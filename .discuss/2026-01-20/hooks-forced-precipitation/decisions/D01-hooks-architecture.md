@@ -1,8 +1,15 @@
 # Hooks Architecture Design
 
 **Decision Time**: R10  
-**Status**: ✅ Confirmed  
+**Status**: ⚠️ PARTIALLY SUPERSEDED  
+**Superseded By**: [D04: Hook Refactoring](./../../../2026-01-28/discuss-mode-optimization/decisions/D04-hook-refactoring.md) (2026-01-28)  
 **Related Outline**: [Back to Outline](../outline.md)
+
+> **⚠️ UPDATE (2026-01-28)**: The hooks architecture has been updated:
+> - Added session-based round counting (one increment per conversation)
+> - Removed `pending_update` in favor of `last_updated_round` comparison
+> - Added session management via temporary files
+> - Core design principle remains valid: "Intelligence work for Agent, process work for Hook"
 
 ---
 

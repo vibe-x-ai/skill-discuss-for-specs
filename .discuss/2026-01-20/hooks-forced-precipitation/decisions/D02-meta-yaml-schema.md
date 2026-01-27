@@ -1,8 +1,15 @@
 # meta.yaml Schema Design
 
 **Decision Time**: R10  
-**Status**: ✅ Confirmed  
+**Status**: ⚠️ SUPERSEDED  
+**Superseded By**: [D03: meta.yaml Programmatic Design](./../../../2026-01-28/discuss-mode-optimization/decisions/D03-meta-yaml-design.md) (2026-01-28)  
 **Related Outline**: [Back to Outline](../outline.md)
+
+> **⚠️ UPDATE (2026-01-28)**: The meta.yaml schema has been significantly redesigned:
+> - Added session-based round counting
+> - Added file tracking with `last_updated_round` field
+> - Removed `pending_update` in favor of round difference calculation
+> - meta.yaml is now fully automated by Hooks (zero agent burden)
 
 ---
 

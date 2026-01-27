@@ -131,7 +131,7 @@ You ──────►  "The first one"  (Simple choice)
 
 | ❌ Without Discussion Mode | ✅ With Discussion Mode |
 |:--------------------------|:-----------------------|
-| 📜 Just chat history | 📁 `discuss/caching-system/` |
+| 📜 Just chat history | 📁 `.discuss/caching-system/` |
 | (scroll up to find things) | ├── 📋 `outline.md` (live progress) |
 | (info scattered in conversation) | ├── 📊 `meta.yaml` (round count) |
 | • Decision 1... somewhere | └── 📄 `decisions/` |
@@ -183,7 +183,7 @@ Use Discussion Mode whenever you need to clarify and refine ideas:
 
 ## ✨ Technical Features
 
-- **2-Skill Architecture**: Clean separation between coordination (`discuss-coordinator`) and output (`discuss-output`)
+- **Single-Skill Architecture**: Unified `discuss-mode` Skill with template separation for easy maintenance
 - **Intelligent Precipitation**: Automatic detection of unprecipitated decisions with configurable reminders
 - **Hook-Based Automation**: Process work (round counting, state checking) handled by Python scripts, not AI
 - **Multi-Platform Support**: Claude Code (ready), Cursor & VS Code (planned)
@@ -234,8 +234,7 @@ npx discuss-skills uninstall --platform cursor
 ```
 skill-discuss-for-specs/
 ├── skills/              # 📝 Skill instructions (Markdown for AI)
-│   ├── discuss-coordinator/    # Discussion coordination & tracking
-│   └── discuss-output/         # Outline rendering & documentation
+│   └── discuss-mode/          # Single merged discussion skill
 ├── hooks/               # ⚡ Automation scripts (Python)
 │   ├── file-edit/           # File edit tracking hook
 │   ├── stop/                # Precipitation check hook
@@ -243,7 +242,7 @@ skill-discuss-for-specs/
 ├── npm-package/         # 📦 NPM distribution package
 ├── platforms/           # 🔌 Platform build scripts
 ├── config/              # ⚙️ Configuration templates
-└── discuss/             # 💬 Discussion archives (examples)
+└── .discuss/            # 💬 Discussion archives (examples)
 ```
 
 ---
@@ -251,8 +250,8 @@ skill-discuss-for-specs/
 ## 📚 Documentation
 
 - **[How It Works](docs/HOW-IT-WORKS.md)** - Architecture, hooks, and internal mechanisms
-- [Architecture Discussion](discuss/2026-01-17/skill-discuss-architecture-design/outline.md) - Real example of Discussion Mode
-- [Decision Records](discuss/2026-01-17/skill-discuss-architecture-design/decisions/) - Documented architectural decisions
+- [Architecture Discussion](.discuss/2026-01-17/skill-discuss-architecture-design/outline.md) - Real example of Discussion Mode
+- [Decision Records](.discuss/2026-01-17/skill-discuss-architecture-design/decisions/) - Documented architectural decisions
 - [AGENTS.md](AGENTS.md) - Guidelines for AI agents working with this system
 
 ---

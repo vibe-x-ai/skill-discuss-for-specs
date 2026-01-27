@@ -1,0 +1,8 @@
+---
+name: discuss-mode
+description: "In-depth conversation assistant for structured discussions with decision precipitation"
+metadata:
+  version: "0.2.0"
+  author: "vibe-x-ai"
+  category: "discussion-support"
+---

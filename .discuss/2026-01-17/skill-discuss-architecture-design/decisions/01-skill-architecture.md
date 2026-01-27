@@ -1,8 +1,13 @@
 # Skill Architecture
 
 **Decision Time**: #R3-R4  
-**Status**: ✅ Confirmed  
+**Status**: ⚠️ SUPERSEDED  
+**Superseded By**: [D07: Skill Architecture Merge](./../../../2026-01-28/discuss-mode-optimization/decisions/D01-skill-architecture.md) (2026-01-28)  
 **Related Outline**: [Back to Outline](../outline.md)
+
+> **⚠️ UPDATE (2026-01-28)**: This decision has been superseded. The 2-Skill architecture 
+> (`discuss-coordinator` + `discuss-output`) has been merged into a single `discuss-mode` Skill.
+> See the updated decision for details.
 
 ---
 

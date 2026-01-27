@@ -1,8 +1,15 @@
 # Project Directory Structure
 
 **Decision Time**: #R9-R11  
-**Status**: ✅ Confirmed  
+**Status**: ⚠️ PARTIALLY SUPERSEDED  
+**Superseded By**: [D02: Directory Structure](./../../../2026-01-28/discuss-mode-optimization/decisions/D02-directory-structure.md) (2026-01-28)  
 **Related Outline**: [Back to Outline](../outline.md)
+
+> **⚠️ UPDATE (2026-01-28)**: The discussion directory structure has been updated:
+> - Old: `discuss/YYYY-MM-DD/[topic]/`
+> - New: `.discuss/YYYY-MM-DD/[topic]/` (hidden directory)
+> 
+> The Skills and Hooks directory structure remains valid.
 
 ---
 

@@ -1,15 +1,16 @@
 # Spec-Kit Cross-Platform Distribution Architecture
 
 > **Project**: skill-discuss-for-specs  
-> **Version**: v0.1.0  
+> **Version**: v0.2.0  
 > **Created**: 2026-01-19  
-> **Status**: Design confirmed, pending implementation
+> **Last Updated**: 2026-01-28  
+> **Status**: Design confirmed, implementation in progress
 
 ---
 
 ## Overview
 
-This project adopts spec-kit's cross-platform distribution architecture to provide unified cross-platform distribution capabilities for `discuss-coordinator` and `discuss-output` Skills. Through standardized Skill format, centralized configuration management, and npm distribution mechanism, we achieve the goal of "one set of content, multi-platform deployment".
+This project adopts spec-kit's cross-platform distribution architecture to provide unified cross-platform distribution capabilities for the `discuss-mode` Skill. Through standardized Skill format, centralized configuration management, and npm distribution mechanism, we achieve the goal of "one set of content, multi-platform deployment".
 
 ### Core Objectives
 
@@ -33,14 +34,25 @@ This project adopts spec-kit's cross-platform distribution architecture to provi
 
 ## Key Decision Summary
 
-| Decision | Conclusion | Details |
-|----------|------------|---------|
-| D1: Primary Distribution Format | Skill (`SKILL.md` + YAML frontmatter) | [Architecture - D1](./02-architecture-design.md#d1-skill-as-primary-distribution-format) |
-| D2: Header Separation Design | Preserve `headers/<platform>.yaml` separation | [Architecture - D2](./02-architecture-design.md#d2-preserve-header-separation-design) |
-| D3: Centralized Configuration | Create `config/platforms.yaml` | [Architecture - D3](./02-architecture-design.md#d3-adopt-centralized-configuration-management) |
-| D4: Distribution Method | Distribute installation commands via npm | [Architecture - D4](./02-architecture-design.md#d4-distribute-installation-commands-via-npm) |
-| D5: npm Package Design | Package name `discuss-skills`, Node.js implementation | [Architecture - D5](./02-architecture-design.md#d5-npm-package-design) |
-| D6: Pre-built Content | npm package includes pre-built SKILL.md files | [Architecture - D6](./02-architecture-design.md#d6-pre-built-content-in-npm-package) |
+### Original Decisions (2026-01-19)
+
+| Decision | Conclusion | Details | Status |
+|----------|------------|---------|--------|
+| D1: Primary Distribution Format | Skill (`SKILL.md` + YAML frontmatter) | [Architecture - D1](./02-architecture-design.md#d1-skill-as-primary-distribution-format) | ✅ Active |
+| D2: Header Separation Design | Preserve `headers/<platform>.yaml` separation | [Architecture - D2](./02-architecture-design.md#d2-preserve-header-separation-design) | ✅ Active |
+| D3: Centralized Configuration | Create `config/platforms.yaml` | [Architecture - D3](./02-architecture-design.md#d3-adopt-centralized-configuration-management) | ✅ Active |
+| D4: Distribution Method | Distribute installation commands via npm | [Architecture - D4](./02-architecture-design.md#d4-distribute-installation-commands-via-npm) | ✅ Active |
+| D5: npm Package Design | Package name `discuss-skills`, Node.js implementation | [Architecture - D5](./02-architecture-design.md#d5-npm-package-design) | ✅ Active |
+| D6: Pre-built Content | npm package includes pre-built SKILL.md files | [Architecture - D6](./02-architecture-design.md#d6-pre-built-content-in-npm-package) | ✅ Active |
+
+### New Decisions (2026-01-28)
+
+| Decision | Conclusion | Details | Status |
+|----------|------------|---------|--------|
+| D7: Skill Merge | Merge coordinator + output into single `discuss-mode` Skill | [Architecture - D7](./02-architecture-design.md#d7-skill-architecture-merge) | ✅ Active |
+| D8: Directory Structure | Use `.discuss/YYYY-MM-DD/[topic]/` | [Architecture - D8](./02-architecture-design.md#d8-discussion-directory-structure) | ✅ Active |
+| D9: meta.yaml Automation | Fully automated by Hooks, zero agent burden | [Architecture - D9](./02-architecture-design.md#d9-metayaml-programmatic-automation) | ✅ Active |
+| D10: Hook Refactoring | Session-based round counting | [Architecture - D10](./02-architecture-design.md#d10-hook-refactoring) | ✅ Active |
 
 ---
 
@@ -76,10 +88,11 @@ npx discuss-skills --version
 
 ## References
 
-- [Discussion Records](../discuss/2026-01-19/spec-kit-evaluation/)
+- [Discussion Records (Original)](../.discuss/2026-01-19/spec-kit-evaluation/)
+- [Discussion Records (2026-01-28 Update)](../.discuss/2026-01-28/discuss-mode-optimization/)
 - [Platform Skills Mechanism Comparison](./01-technical-research.md)
 - [spec-kit Project](https://github.com/spec-kit/spec-kit)
 
 ---
 
-**Last Updated**: 2026-01-19
+**Last Updated**: 2026-01-28

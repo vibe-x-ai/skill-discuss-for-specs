@@ -1,8 +1,9 @@
 # Architecture Design: Cross-Platform Skills Distribution
 
 > **Created**: 2026-01-19  
+> **Last Updated**: 2026-01-28  
 > **Status**: Confirmed  
-> **Discussion Source**: [spec-kit-evaluation discussion](../discuss/2026-01-19/spec-kit-evaluation/)
+> **Discussion Source**: [Original Discussion](./../.discuss/2026-01-19/spec-kit-evaluation/) | [2026-01-28 Update](./../.discuss/2026-01-28/discuss-mode-optimization/)
 
 ---
 
@@ -42,7 +43,7 @@
 
 ---
 
-## 2. Architecture Decisions
+## 2. Original Architecture Decisions (2026-01-19)
 
 ### D1: Skill as Primary Distribution Format
 
@@ -51,7 +52,7 @@
 
 #### Background
 
-Need to determine the format for distributing discussion capabilities (`discuss-coordinator`, `discuss-output`) across different AI products.
+Need to determine the format for distributing discussion capabilities across different AI products.
 
 #### Options Considered
 
@@ -65,13 +66,6 @@ Need to determine the format for distributing discussion capabilities (`discuss-
 
 Use **Skill** as the primary distribution format. Other formats (like Slash Commands) can be secondary, deferred for later implementation.
 
-#### Rationale
-
-1. **Broad Platform Support**: Claude Code, Cursor, GitHub Copilot, Windsurf, and Gemini CLI all support Skills
-2. **Unified Format**: All platforms use `SKILL.md` + YAML frontmatter
-3. **Automatic Triggering**: Better user experience, no need to remember commands
-4. **Extensible**: Slash Command support can be added in the future
-
 ---
 
 ### D2: Preserve Header Separation Design
@@ -81,14 +75,7 @@ Use **Skill** as the primary distribution format. Other formats (like Slash Comm
 
 #### Background
 
-The current project has a `skills/<name>/headers/<platform>.yaml` design that separates YAML frontmatter from Skill content. Need to decide whether to keep this design.
-
-#### Options Considered
-
-| Option | Description | Pros | Cons | Decision |
-|--------|-------------|------|------|----------|
-| Separated | `headers/<platform>.yaml` + `SKILL.md` | Reserves space for platform differences; flexible combination during build | Slightly more files | ✅ |
-| Merged | Single `SKILL.md` including frontmatter | Simple and intuitive | Refactoring needed when platform differences exist | ❌ |
+The current project has a `skills/<name>/headers/<platform>.yaml` design that separates YAML frontmatter from Skill content.
 
 #### Final Decision
 
@@ -100,22 +87,6 @@ Preserve the `skills/<name>/headers/<platform>.yaml` separated design.
 2. **Build-time Concatenation**: `headers/<platform>.yaml` + `SKILL.md` → complete file
 3. **Good Extensibility**: Adding a new platform only requires adding the corresponding header file
 
-#### Expected Structure
-
-```
-skills/
-├── discuss-coordinator/
-│   ├── SKILL.md
-│   └── headers/
-│       ├── claude-code.yaml
-│       ├── cursor.yaml
-│       ├── github-copilot.yaml
-│       ├── windsurf.yaml
-│       └── gemini.yaml
-└── discuss-output/
-    └── (same structure)
-```
-
 ---
 
 ### D3: Adopt Centralized Configuration Management
@@ -123,64 +94,9 @@ skills/
 **Decision Time**: R5  
 **Status**: ✅ Confirmed
 
-#### Background
-
-Need to manage configuration information for multiple platforms (directory conventions, header file names, etc.). Decide between centralized configuration or platform-specific hardcoding.
-
-#### Options Considered
-
-| Option | Description | Pros | Cons | Decision |
-|--------|-------------|------|------|----------|
-| Centralized Config | `config/platforms.yaml` | Single source of truth; simple to add platforms; generalized build scripts | Need to parse configuration | ✅ |
-| Hardcoded | Independent `build.sh` per platform | Simple and direct | Lots of duplicate code; troublesome to add new platforms | ❌ |
-
 #### Final Decision
 
 Create `config/platforms.yaml` to centrally manage platform information.
-
-#### Rationale
-
-1. **Adopt Proven Solution**: spec-kit's `AGENT_CONFIG` pattern is well-tested
-2. **Maintainability**: Adding a new platform only requires adding one configuration entry
-3. **Generalized Build Scripts**: One script handles all platforms
-
-#### Expected Configuration
-
-```yaml
-# config/platforms.yaml
-platforms:
-  claude-code:
-    name: "Claude Code"
-    skills_dir: ".claude/skills"
-    header_file: "claude-code.yaml"
-    status: "stable"
-
-  cursor:
-    name: "Cursor"
-    skills_dir: ".cursor/skills"
-    header_file: "cursor.yaml"
-    status: "beta"
-    note: "Skills feature may require Nightly version"
-
-  github-copilot:
-    name: "GitHub Copilot"
-    skills_dir: ".github/skills"
-    header_file: "github-copilot.yaml"
-    status: "stable"
-
-  windsurf:
-    name: "Windsurf"
-    skills_dir: ".windsurf/skills"
-    header_file: "windsurf.yaml"
-    status: "stable"
-
-  gemini:
-    name: "Gemini CLI"
-    skills_dir: ".gemini/skills"
-    header_file: "gemini.yaml"
-    status: "needs-enable"
-    note: "Need to run `gemini skills enable <name>` to enable"
-```
 
 ---
 
@@ -189,29 +105,9 @@ platforms:
 **Decision Time**: R5  
 **Status**: ✅ Confirmed
 
-#### Background
-
-Users need to install Skills into their projects. Need to determine the distribution and installation method.
-
-#### Options Considered
-
-| Option | Description | Pros | Cons | Decision |
-|--------|-------------|------|------|----------|
-| npm package | `npx discuss-skills install` | Standardized; no download needed; good version management | Requires Node.js environment | ✅ |
-| Installation script | `./install.sh --platform cursor` | Simple | Need to download script first | ❌ |
-| Manual copy | Users manually copy files | Simplest | Poor experience; error-prone | ❌ |
-| Git clone | Run build after `git clone` | Good version control | Users need to understand build process | ❌ |
-
 #### Final Decision
 
 Publish `discuss-skills` package via npm, providing bin commands.
-
-#### Rationale
-
-1. **User Experience**: `npx discuss-skills install` - done with one command
-2. **Version Management**: npm has built-in version management
-3. **No Pre-download**: `npx` runs directly
-4. **Industry Standard**: Like `create-react-app`, `specify`, etc.
 
 #### Expected Commands
 
@@ -236,46 +132,11 @@ npx discuss-skills --version
 **Decision Time**: R6  
 **Status**: ✅ Confirmed
 
-#### Background
-
-Determine the specific design of the npm package: package name, implementation language, dependency strategy.
-
-#### Options Considered
-
-**Package Name Selection**
-
-| Option | Pros | Cons | Decision |
-|--------|------|------|----------|
-| `discuss-skills` | Descriptive; easy to remember | Slightly longer | ✅ |
-| `skill-discuss` | Consistent with project name | Less intuitive | ❌ |
-| `dskill` | Short | Meaning unclear | ❌ |
-
-**Implementation Language**
-
-| Option | Pros | Cons | Decision |
-|--------|------|------|----------|
-| Node.js | Native to npm; good ecosystem; large user base | Requires Node environment | ✅ |
-| Python | Already has pyproject.toml | Needs pipx; not as widespread as npm | ❌ |
-
 #### Final Decision
 
 - **Package Name**: `discuss-skills`
 - **Language**: Node.js (TypeScript optional)
 - **Dependencies**: Minimized, may only need `commander` or native parsing
-
-#### Expected package.json
-
-```json
-{
-  "name": "discuss-skills",
-  "bin": {
-    "discuss-skills": "./bin/cli.js"
-  },
-  "dependencies": {
-    // Minimal or no dependencies
-  }
-}
-```
 
 ---
 
@@ -284,124 +145,234 @@ Determine the specific design of the npm package: package name, implementation l
 **Decision Time**: R7  
 **Status**: ✅ Confirmed
 
-#### Background
-
-The npm package needs to include the Skill files. Decide whether to include source files and build at install time, or include pre-built files ready for direct copy.
-
-#### Options Considered
-
-| Option | Description | Pros | Cons | Decision |
-|--------|-------------|------|------|----------|
-| Pre-built | Include complete SKILL.md files (header + content) for each platform | Fast installation; no build step; no external dependencies needed at runtime | Larger package size; need to rebuild when source changes | ✅ |
-| Build at install | Include source files, concatenate header + content during `install` command | Smaller package; always uses latest structure | Slower installation; more complex logic; potential for build errors | ❌ |
-
 #### Final Decision
 
 Include **pre-built content** in the npm package. The package will contain complete `SKILL.md` files for each platform, generated during the package build/publish process.
 
+---
+
+## 3. Updated Architecture Decisions (2026-01-28)
+
+### D7: Skill Architecture Merge
+
+**Decision Time**: 2026-01-28 R4  
+**Status**: ✅ Confirmed  
+**Supersedes**: Original 2-skill architecture (`discuss-coordinator` + `discuss-output`)
+
+#### Background
+
+The original design split discussion mode into two Skills:
+- `discuss-coordinator` - handles discussion facilitation and problem tracking
+- `discuss-output` - handles outline rendering and file management
+
+This caused issues with cross-cutting concerns (constraints, principles) not fitting neatly into either.
+
+#### Final Decision
+
+Merge into a **single `discuss-mode` Skill** with template separation.
+
+#### New Structure
+
+```
+skills/
+└── discuss-mode/
+    ├── SKILL.md              # Main file (~8KB): principles + logic
+    ├── headers/
+    │   ├── claude-code.yaml
+    │   └── cursor.yaml
+    └── references/
+        ├── outline-template.md
+        ├── decision-template.md
+        └── meta-schema.yaml
+```
+
 #### Rationale
 
-1. **Fast Installation**: Users just copy files, no concatenation needed at runtime
-2. **No Runtime Dependencies**: Installation logic is simple file copy
-3. **Reliability**: Pre-built files are tested before publish, reducing installation errors
-4. **Offline Friendly**: All content is already in the package, no network requests needed
+1. Key principles (discussion-first) need to permeate the entire Skill
+2. Templates are only needed at specific moments (creating files)
+3. Separation allows templates to be updated independently
 
-#### Expected Package Structure
+#### Impact on npm Package
 
 ```
 discuss-skills/
-├── bin/
-│   └── cli.js
-├── dist/                          # Pre-built files
+├── dist/
 │   ├── claude-code/
-│   │   ├── discuss-coordinator/
-│   │   │   └── SKILL.md          # Complete file (header + content)
-│   │   └── discuss-output/
+│   │   └── discuss-mode/         # Changed from discuss-coordinator + discuss-output
 │   │       └── SKILL.md
-│   ├── cursor/
-│   │   └── ...
-│   ├── github-copilot/
-│   │   └── ...
-│   ├── windsurf/
-│   │   └── ...
-│   └── gemini/
-│       └── ...
-├── config/
-│   └── platforms.yaml
-└── package.json
-```
-
-#### Build Process
-
-During package build (before `npm publish`):
-
-```bash
-# Build script concatenates headers + content for each platform
-node scripts/build.js
-
-# Output: dist/<platform>/<skill>/SKILL.md
-```
-
-#### Install Logic (Simplified)
-
-```javascript
-// Installation is now simple file copy
-async function install(platform, targetDir) {
-  const sourceDir = path.join(__dirname, '../dist', platform);
-  const targetSkillsDir = path.join(targetDir, platformConfig.skills_dir);
-  
-  // Just copy the pre-built files
-  copyDirectory(sourceDir, targetSkillsDir);
-}
+│   └── cursor/
+│       └── discuss-mode/
+│           └── SKILL.md
+└── ...
 ```
 
 ---
 
-## 3. Platform Header Templates
+### D8: Discussion Directory Structure
 
-### 3.1 Claude Code (`headers/claude-code.yaml`)
+**Decision Time**: 2026-01-28 R2  
+**Status**: ✅ Confirmed  
+**Supersedes**: Original `discuss/YYYY-MM-DD/` structure
+
+#### Background
+
+The original implementation used `discuss/` as the base directory for discussion artifacts.
+
+#### Final Decision
+
+Use **`.discuss/YYYY-MM-DD/[topic-slug]/`** as the standardized directory structure.
+
+#### Structure
+
+```
+.discuss/
+└── YYYY-MM-DD/
+    └── [topic-slug]/
+        ├── outline.md      # Discussion outline (state-priority order)
+        ├── meta.yaml       # Metadata (fully automated by Hooks)
+        ├── decisions/      # Decision documents
+        │   ├── D01-xxx.md
+        │   └── D02-xxx.md
+        └── notes/          # Reference materials (optional)
+            └── topic-analysis.md
+```
+
+#### Rationale
+
+1. Hidden directory (`.discuss/`) keeps project root clean
+2. Date-based organization helps track discussion chronology
+3. Topic slug provides clear identification
+
+---
+
+### D9: meta.yaml Programmatic Automation
+
+**Decision Time**: 2026-01-28 R7  
+**Status**: ✅ Confirmed  
+**Supersedes**: Original agent-maintained meta.yaml
+
+#### Background
+
+The original design required the AI agent to manually maintain `meta.yaml`, including topic name, decision tracking, and round counting.
+
+#### Final Decision
+
+Make `meta.yaml` **fully automated through Hooks**, with zero agent responsibility.
+
+#### Data Structure
+
+```yaml
+# meta.yaml - Fully maintained by Hooks
+
+# Basic info (auto-derived from directory structure)
+topic: "discuss-mode-optimization"  # From directory name
+created: 2026-01-28                  # Auto-set on first creation
+
+# Round management
+current_round: 6                     # Current round number
+# Rule: +1 per conversation where outline is updated (multiple edits = +1)
+
+# Configuration
+config:
+  stale_threshold: 3                 # Remind if N rounds without update
+
+# Decisions file tracking (auto-scanned from decisions/ directory)
+decisions:
+  - path: "decisions/D01-skill-merge.md"
+    name: "D01-skill-merge.md"
+    last_modified: "2026-01-28T01:30:00Z"
+    last_updated_round: 5
+
+# Notes file tracking (auto-scanned from notes/ directory)
+notes:
+  - path: "notes/template-analysis.md"
+    name: "template-analysis.md"
+    last_modified: "2026-01-28T00:45:00Z"
+    last_updated_round: 3
+```
+
+#### Session Management
+
+Temporary session files organized by platform + sessionID:
+
+```
+.discuss/.sessions/
+├── claude-code/
+│   └── {sessionID}.json
+└── cursor/
+    └── {sessionID}.json
+```
+
+---
+
+### D10: Hook Refactoring
+
+**Decision Time**: 2026-01-28 R7  
+**Status**: ✅ Confirmed
+
+#### Background
+
+Current hooks have issues with round counting and discussion mode detection.
+
+#### Final Decision
+
+Refactor hooks to support:
+1. Session-based round counting (one increment per conversation)
+2. Discussion mode detection (based on outline updates)
+3. Fully automated meta.yaml maintenance
+
+#### New Architecture
+
+```
+hooks/
+├── common/
+│   ├── file_utils.py
+│   ├── meta_parser.py        # Refactored for new schema
+│   ├── session_manager.py    # NEW: Session file management
+│   └── platform_utils.py
+├── file-edit/
+│   └── track_file_edit.py    # Updates meta.yaml + session file
+└── stop/
+    └── check_precipitation.py # Round-based staleness check
+```
+
+#### Trigger Mechanism
+
+| Trigger | Hook | Action |
+|---------|------|--------|
+| Outline edited | file-edit | 1. Find meta.yaml<br>2. Record in session<br>3. If first update, current_round +1 |
+| Decision edited | file-edit | Update decisions[] with last_updated_round |
+| Notes edited | file-edit | Update notes[] with last_updated_round |
+| Conversation ends | stop | Check round difference, emit reminder if needed |
+
+---
+
+## 4. Platform Header Templates
+
+### 4.1 Claude Code (`headers/claude-code.yaml`)
 
 ```yaml
 ---
-name: discuss-coordinator
-description: "Discussion mode coordinator managing output strategy, problem tracking, and precipitation rules. Use when user requests discussion mode or wants to track decisions."
+name: discuss-mode
+description: "In-depth conversation assistant for structured discussions with decision precipitation. Use when user requests discussion mode or wants to track decisions."
 ---
 ```
 
-**Notes**:
-- `description` must be single line, cannot use YAML multi-line syntax
-- Recommended to clearly state "when to use" (Use when...)
-
-### 3.2 Cursor (`headers/cursor.yaml`)
+### 4.2 Cursor (`headers/cursor.yaml`)
 
 ```yaml
 ---
-name: discuss-coordinator
-description: "Discussion mode coordinator managing output strategy, problem tracking, and precipitation rules. Use when user requests discussion mode or wants to track decisions."
+name: discuss-mode
+description: "In-depth conversation assistant for structured discussions with decision precipitation. Use when user requests discussion mode or wants to track decisions."
 alwaysApply: false
 ---
 ```
 
-**Notes**:
-- `alwaysApply: false` means Agent decides based on context
-- Can add `globs` to limit application scope
-
-### 3.3 Other Platforms
-
-Similar structure, with platform-specific fields as needed. The common fields (`name`, `description`) remain consistent across all platforms.
-
 ---
 
-## 4. Compatibility Considerations
+## 5. Compatibility Considerations
 
-### 4.1 Unknown Field Handling
-
-- **Claude Code** will ignore unrecognized fields (like `alwaysApply`)
-- **Cursor** will ignore unrecognized fields (like `allowed-tools`)
-
-This means merging fields is technically possible, but for clarity, maintaining separate headers is recommended.
-
-### 4.2 Feature Status
+### 5.1 Feature Status
 
 | Platform | Skills Feature | Stability |
 |----------|----------------|-----------|
@@ -413,12 +384,13 @@ This means merging fields is technically possible, but for clarity, maintaining 
 
 ---
 
-## 5. References
+## 6. References
 
 - [Technical Research](./01-technical-research.md)
 - [spec-kit Project](https://github.com/spec-kit/spec-kit)
-- [Discussion Records](../discuss/2026-01-19/spec-kit-evaluation/)
+- [Original Discussion Records](./../.discuss/2026-01-19/spec-kit-evaluation/)
+- [2026-01-28 Update Discussion](./../.discuss/2026-01-28/discuss-mode-optimization/)
 
 ---
 
-**Last Updated**: 2026-01-19
+**Last Updated**: 2026-01-28

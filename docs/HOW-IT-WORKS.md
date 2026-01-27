@@ -2,25 +2,27 @@
 
 This document explains the internal architecture and mechanisms of the Discussion Mode system.
 
-> For quick start and installation, see the [README](README.md).
+> For quick start and installation, see the [README](../README.md).
 
 ---
 
 ## Overview
 
-Discussion Mode uses a **2-Skill + Hooks** architecture:
+Discussion Mode uses a **Single-Skill + Hooks** architecture:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                        AI Platform                               │
 │  ┌────────────────────────────────────────────────────────────┐ │
-│  │                         Skills                              │ │
-│  │  ┌─────────────────────┐  ┌─────────────────────────────┐  │ │
-│  │  │ discuss-coordinator │  │      discuss-output         │  │ │
-│  │  │  • Problem tracking │  │  • Outline rendering        │  │ │
-│  │  │  • Trend analysis   │  │  • Decision documents       │  │ │
-│  │  │  • Consensus detect │  │  • File management          │  │ │
-│  │  └─────────────────────┘  └─────────────────────────────┘  │ │
+│  │                         Skill                               │ │
+│  │  ┌──────────────────────────────────────────────────────┐  │ │
+│  │  │                   discuss-mode                        │  │ │
+│  │  │  • Three Roles (Socratic, Devil's Advocate, Connector)│  │ │
+│  │  │  • Problem Type Differentiation                       │  │ │
+│  │  │  • Discussion-First Principle                         │  │ │
+│  │  │  • Problem Tracking & Consensus Recognition           │  │ │
+│  │  │  • Output Strategy (No Duplication)                   │  │ │
+│  │  └──────────────────────────────────────────────────────┘  │ │
 │  └────────────────────────────────────────────────────────────┘ │
 │                              │                                   │
 │                              ▼                                   │
@@ -34,29 +36,35 @@ Discussion Mode uses a **2-Skill + Hooks** architecture:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
+> **Note**: Previous versions used two separate Skills (`discuss-coordinator` + `discuss-output`). 
+> As of 2026-01-28, these have been merged into a single `discuss-mode` Skill.
+> See [Architecture Decision D7](../specs/spec-kit-evaluation/02-architecture-design.md#d7-skill-architecture-merge).
+
 ---
 
-## Skills Architecture
+## Skill Architecture
 
-### discuss-coordinator
+### discuss-mode
 
-**Purpose**: Facilitates discussion flow, tracks problems, and guides decision-making.
+**Purpose**: Facilitates in-depth discussions, tracks problems, guides decision-making, and manages structured output.
+
+**Core Components**:
+
+| Component | Description |
+|-----------|-------------|
+| **Three Roles** | Socratic Questioner, Devil's Advocate, Knowledge Connector |
+| **Problem Types** | Different strategies for Factual / Design / Open-ended questions |
+| **Discussion-First** | Ask before outputting; don't guess |
+| **Problem Tracking** | Lifecycle: ⚪ pending → 🔵 discussing → ✅ resolved |
+| **Output Strategy** | No Duplication between outline.md and responses |
+| **Consensus Rules** | What IS and IS NOT consensus |
 
 **Responsibilities**:
 - Parse user intent and identify discussion topics
-- Track problem lifecycle (🔵 Current Focus → ⚪ Pending → ✅ Confirmed)
+- Track problem lifecycle
 - Analyze trends and detect consensus
-- Determine when decisions are ready to precipitate
-
-### discuss-output
-
-**Purpose**: Manages structured output and documentation.
-
-**Responsibilities**:
 - Render and update `outline.md` after each round
 - Create decision documents in `decisions/` directory
-- Manage `meta.yaml` status tracking
-- Archive discussions and notes
 
 ---
 
@@ -70,8 +78,8 @@ Hooks automate "process work" that doesn't require AI intelligence:
 
 | Work Type | Handler | Examples |
 |-----------|---------|----------|
-| Intelligence | AI Skills | Understanding problems, analyzing solutions, recognizing consensus |
-| Process | Python Hooks | Counting rounds, checking staleness, file operations |
+| Intelligence | AI Skill | Understanding problems, analyzing solutions, recognizing consensus |
+| Process | Python Hooks | Counting rounds, checking staleness, file scanning |
 
 ### Hook 1: File Edit Tracking
 
@@ -80,9 +88,10 @@ Hooks automate "process work" that doesn't require AI intelligence:
 - Cursor: `afterFileEdit` event
 
 **Behavior**:
-1. Detect if edited file is in a discussion directory
-2. Set `pending_update: true` in `meta.yaml`
-3. Always allow the operation to continue
+1. Detect if edited file is in a `.discuss/` directory
+2. Determine file type (outline / decision / note)
+3. Update `meta.yaml` with file tracking info
+4. Update session file for round counting
 
 ### Hook 2: Precipitation Check
 
@@ -91,18 +100,34 @@ Hooks automate "process work" that doesn't require AI intelligence:
 - Cursor: `stop` event
 
 **Behavior**:
-1. Scan for discussions with `pending_update: true`
-2. Update `last_modified_run` and clear `pending_update`
-3. Increment `current_run` counter
-4. Check for stale files (not updated for N runs)
-5. If stale, remind user to update outline/decisions
+1. Check session file for outline updates
+2. If no outline updates → skip (not in discussion mode)
+3. If outline updated → check for stale decisions/notes
+4. Calculate: `current_round - last_updated_round`
+5. If exceeds threshold → remind user
+6. Clean up session file
 
-### Two-Stage Reminder Logic
+### Session-Based Round Counting
 
-| Stage | Threshold | Behavior |
-|-------|-----------|----------|
-| Suggest | `suggest_update_runs` (default: 3) | Gentle reminder |
-| Force | `force_update_runs` (default: 10) | Strong reminder, may block |
+To ensure accurate round counting (one increment per conversation):
+
+```
+.discuss/.sessions/
+├── claude-code/
+│   └── {sessionID}.json
+└── cursor/
+    └── {sessionID}.json
+```
+
+Session file content:
+```json
+{
+  "session_id": "abc123",
+  "started_at": "2026-01-28T01:30:00Z",
+  "outline_updated": true,
+  "outline_paths": [".discuss/2026-01-28/topic/outline.md"]
+}
+```
 
 ---
 
@@ -111,9 +136,9 @@ Hooks automate "process work" that doesn't require AI intelligence:
 Each discussion creates a structured directory:
 
 ```
-discuss/YYYY-MM-DD/topic-name/
+.discuss/YYYY-MM-DD/topic-name/
 ├── outline.md          # Live progress tracking
-├── meta.yaml           # Metadata and run counters
+├── meta.yaml           # Metadata (fully automated by Hooks)
 ├── decisions/          # Precipitated decisions
 │   ├── D01-topic.md
 │   ├── D02-topic.md
@@ -122,6 +147,10 @@ discuss/YYYY-MM-DD/topic-name/
     └── ...
 ```
 
+> **Note**: Previous versions used `discuss/` (without dot). As of 2026-01-28, 
+> the standardized location is `.discuss/` (hidden directory).
+> See [Architecture Decision D8](../specs/spec-kit-evaluation/02-architecture-design.md#d8-discussion-directory-structure).
+
 ### outline.md
 
 Real-time tracking of discussion state:
@@ -129,16 +158,18 @@ Real-time tracking of discussion state:
 ```markdown
 # Discussion: Topic Name
 
+> Status: In Progress | Round: R[N] | Date: YYYY-MM-DD
+
 ## 🔵 Current Focus
 - Current question being discussed
 
 ## ⚪ Pending
 - [ ] Q1: Unanswered question
-- [x] ~~Q2: Answered question~~ → See decisions
 
 ## ✅ Confirmed
-- D1: First decision → [Document](decisions/D01-xxx.md)
-- D2: Second decision → [Document](decisions/D02-xxx.md)
+| Decision | Description | Document |
+|----------|-------------|----------|
+| D1: First decision | Brief desc | [D01](./decisions/D01-xxx.md) |
 
 ## ❌ Rejected
 - (Rejected options with rationale)
@@ -146,27 +177,37 @@ Real-time tracking of discussion state:
 
 ### meta.yaml
 
-Status tracking maintained by hooks:
+Status tracking maintained **fully by Hooks** (zero agent burden):
 
 ```yaml
-# Hook-maintained fields
-created_at: "2026-01-20T10:00:00+08:00"
-current_run: 5
+# Basic info (auto-derived)
+topic: "topic-name"           # From directory name
+created: 2026-01-28
+
+# Round management (auto-updated)
+current_round: 5
 
 # Configuration
 config:
-  suggest_update_runs: 3
-  force_update_runs: 10
+  stale_threshold: 3          # Remind if N rounds without update
 
-# File status tracking
-file_status:
-  outline:
-    last_modified_run: 4
-    pending_update: false
-  decisions:
-    last_modified_run: 2
-    pending_update: false
+# File tracking (auto-scanned)
+decisions:
+  - path: "decisions/D01-xxx.md"
+    name: "D01-xxx.md"
+    last_modified: "2026-01-28T01:30:00Z"
+    last_updated_round: 4
+
+notes:
+  - path: "notes/analysis.md"
+    name: "analysis.md"
+    last_modified: "2026-01-28T00:45:00Z"
+    last_updated_round: 2
 ```
+
+> **Note**: Previous versions required the AI agent to maintain meta.yaml. 
+> As of 2026-01-28, meta.yaml is fully automated by Hooks.
+> See [Architecture Decision D9](../specs/spec-kit-evaluation/02-architecture-design.md#d9-metayaml-programmatic-automation).
 
 ---
 
@@ -192,8 +233,7 @@ After installation, components are distributed as follows:
 ```
 ~/.claude/
 ├── skills/
-│   ├── discuss-coordinator/  # Coordinator skill
-│   └── discuss-output/       # Output skill
+│   └── discuss-mode/         # Single merged skill
 └── settings.json             # Hooks configuration
 ```
 
@@ -201,8 +241,7 @@ After installation, components are distributed as follows:
 ```
 ~/.cursor/
 ├── skills/
-│   ├── discuss-coordinator/  # Coordinator skill
-│   └── discuss-output/       # Output skill
+│   └── discuss-mode/         # Single merged skill
 └── hooks.json                # Hooks configuration
 ```
 
@@ -213,8 +252,7 @@ When using `--target /path/to/project`:
 /path/to/project/
 └── .cursor/                  # or .claude/
     └── skills/
-        ├── discuss-coordinator/
-        └── discuss-output/
+        └── discuss-mode/
 ```
 
 ---
@@ -229,7 +267,7 @@ Hooks log all operations for debugging:
 ```
 2026-01-21 22:31:40 | INFO     | discuss-hooks | Hook Started: track_file_edit
 2026-01-21 22:31:40 | DEBUG    | discuss-hooks | Input Data: {"file_path": "..."}
-2026-01-21 22:31:40 | INFO     | discuss-hooks | Discussion detected: /path/to/discuss/topic
+2026-01-21 22:31:40 | INFO     | discuss-hooks | Discussion detected: /path/to/.discuss/topic
 2026-01-21 22:31:40 | INFO     | discuss-hooks | Hook Ended: track_file_edit [SUCCESS]
 ```
 
@@ -248,10 +286,11 @@ Hooks log all operations for debugging:
 
 ## Related
 
-- [README](README.md) - Quick start and installation
-- [AGENTS.md](AGENTS.md) - Guidelines for AI agents
-- [Architecture Discussion](discuss/2026-01-17/skill-discuss-architecture-design/outline.md) - Design decisions
+- [README](../README.md) - Quick start and installation
+- [AGENTS.md](../AGENTS.md) - Guidelines for AI agents
+- [Architecture Design](../specs/spec-kit-evaluation/02-architecture-design.md) - Design decisions
+- [Discussion Records](./../.discuss/) - Historical discussions
 
 ---
 
-**Last Updated**: 2026-01-22
+**Last Updated**: 2026-01-28

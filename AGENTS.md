@@ -15,46 +15,42 @@ This document provides guidance for AI agents working on this project.
 
 ## 🏗️ Architecture
 
-### 2-Skill Design
+### Single-Skill Architecture
 
 | Skill | Responsibility |
 |-------|---------------|
-| `discuss-coordinator` | Discussion coordination, problem tracking, trend analysis, precipitation rules |
-| `discuss-output` | Outline rendering, file management, document generation |
+| `discuss-mode` | Discussion facilitation, problem tracking, consensus recognition, decision precipitation, file management |
 
 ### Directory Structure (Mechanism-Based)
 
 ```
 skill-discuss-for-specs/
 ├── skills/              # 📝 Markdown instructions for AI
-│   ├── discuss-coordinator/
-│   └── discuss-output/
+│   └── discuss-mode/          # Unified discussion skill
 ├── hooks/               # ⚡ Python automation scripts
-│   ├── post-response/
-│   └── common/
+│   ├── file-edit/           # File edit tracking
+│   ├── stop/                # Precipitation checks
+│   └── common/              # Shared utilities
 ├── platforms/           # 🔌 Platform-specific adaptations
-│   ├── claude-code/
-│   └── cursor/
 ├── config/              # ⚙️ Configuration files
 ├── templates/           # 📄 File templates
-└── discuss/             # 💬 Active discussions
+└── .discuss/            # 💬 Active discussions (dot-prefixed)
 ```
 
 ## 🎯 Key Conventions
 
 ### 1. Skill-Based Architecture
 
-This project provides discussion facilitation capabilities through two Skills:
-- `discuss-coordinator`: Handles discussion logic (in `skills/discuss-coordinator/SKILL.md`)
-- `discuss-output`: Handles output formatting (in `skills/discuss-output/SKILL.md`)
+This project provides discussion facilitation capabilities through a single unified Skill:
+- `discuss-mode`: Handles all discussion logic (in `skills/discuss-mode/SKILL.md`)
 
-**To use discussion capabilities**: Load and follow the Skills. All usage details are documented in the SKILL.md files.
+**To use discussion capabilities**: Load and follow the Skill. All usage details are documented in the SKILL.md file.
 
 ### 2. Data Structures
 
 **Discussion directory**:
 ```
-discuss/YYYY-MM-DD/[topic]/
+.discuss/YYYY-MM-DD/[topic]/
 ├── outline.md          # Discussion outline
 ├── meta.yaml           # Metadata (see schema below)
 ├── decisions/          # Decision documents
@@ -75,12 +71,13 @@ Templates for new discussions are in `templates/`:
 
 | File | Purpose |
 |------|---------|
-| `skills/discuss-coordinator/SKILL.md` | Coordinator skill instructions |
-| `skills/discuss-output/SKILL.md` | Output skill instructions |
+| `skills/discuss-mode/SKILL.md` | Unified discussion skill instructions |
 | `config/default.yaml` | Default configuration |
-| `hooks/post-response/check_stale.py` | Stale decision detection |
-| `discuss/*/outline.md` | Active discussion outlines |
-| `discuss/*/meta.yaml` | Discussion metadata |
+| `hooks/stop/check_precipitation.py` | Decision precipitation detection |
+| `hooks/file-edit/track_file_edit.py` | File edit tracking |
+| `hooks/common/session_manager.py` | Session state management |
+| `.discuss/*/outline.md` | Active discussion outlines |
+| `.discuss/*/meta.yaml` | Discussion metadata |
 
 ## 🔧 Development Guidelines
 
@@ -141,13 +138,17 @@ Skills are pure Markdown instructions. To modify behavior:
 
 ### Hooks Development
 
-Hooks are Python scripts that run automatically:
-- `post-response/`: Run after each AI response
+Hooks are Python scripts that run at specific lifecycle events:
+- `file-edit/`: Triggered when files are edited
+- `stop/`: Triggered when AI response completes
 - `common/`: Shared utilities
 
-**Key modules**:
+**Key modules in `common/`**:
+- `session_manager.py`: Session state management
 - `meta_parser.py`: Parse and manipulate meta.yaml
 - `file_utils.py`: File operations helpers
+- `logging_utils.py`: Centralized logging utilities
+- `platform_utils.py`: Platform detection and adaptation
 
 ## ⚠️ Development Pitfalls
 
@@ -159,11 +160,12 @@ Hooks are Python scripts that run automatically:
 
 ## 🔗 Related Resources
 
-- [Architecture Design Discussion](discuss/2026-01-17/skill-discuss-architecture-design/outline.md)
-- [Decision Documents](discuss/2026-01-17/skill-discuss-architecture-design/decisions/)
+- [Architecture Design Discussion](.discuss/2026-01-17/skill-discuss-architecture-design/outline.md)
+- [Decision Documents](.discuss/2026-01-17/skill-discuss-architecture-design/decisions/)
+- [How It Works](docs/HOW-IT-WORKS.md)
 - [Project README](README.md)
 
 ---
 
-**Version**: 0.1.0  
-**Last Updated**: 2026-01-19
+**Version**: 0.1.0
+**Last Updated**: 2026-01-28

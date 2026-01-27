@@ -18,31 +18,39 @@ export function getHomeDir() {
 }
 
 /**
- * Get the config directory path
+ * Get the base directory path for discuss-for-specs
+ * All data (hooks, logs) is stored under ~/.discuss-for-specs/
  */
-export function getConfigDir() {
-  return join(getHomeDir(), '.config', 'DiscussForSpecs');
+export function getBaseDir() {
+  return join(getHomeDir(), '.discuss-for-specs');
 }
 
 /**
- * Get the data directory path
+ * Get the config directory path (alias for getBaseDir for compatibility)
+ */
+export function getConfigDir() {
+  return getBaseDir();
+}
+
+/**
+ * Get the data directory path (alias for getBaseDir for compatibility)
  */
 export function getDataDir() {
-  return join(getHomeDir(), 'DiscussForSpecs');
+  return getBaseDir();
 }
 
 /**
  * Get the hooks installation path
  */
 export function getHooksDir() {
-  return join(getConfigDir(), 'hooks');
+  return join(getBaseDir(), 'hooks');
 }
 
 /**
  * Get the logs directory path
  */
 export function getLogsDir() {
-  return join(getDataDir(), 'logs');
+  return join(getBaseDir(), 'logs');
 }
 
 /**

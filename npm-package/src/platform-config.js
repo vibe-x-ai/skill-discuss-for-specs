@@ -203,11 +203,11 @@ export function removeHooksConfig(platformId) {
       const settings = JSON.parse(readFileSync(settingsPath, 'utf-8'));
       
       if (settings.hooks) {
-        // Remove our specific hooks (those containing DiscussForSpecs)
+        // Remove our specific hooks (those containing discuss-for-specs)
         for (const hookType of ['PostToolUse', 'Stop']) {
           if (settings.hooks[hookType]) {
             settings.hooks[hookType] = settings.hooks[hookType].filter(
-              h => !JSON.stringify(h).includes('DiscussForSpecs')
+              h => !JSON.stringify(h).includes('discuss-for-specs')
             );
             if (settings.hooks[hookType].length === 0) {
               delete settings.hooks[hookType];
@@ -230,7 +230,7 @@ export function removeHooksConfig(platformId) {
         for (const hookType of ['afterFileEdit', 'stop']) {
           if (hooksConfig.hooks[hookType]) {
             hooksConfig.hooks[hookType] = hooksConfig.hooks[hookType].filter(
-              h => !h.command?.includes('DiscussForSpecs')
+              h => !h.command?.includes('discuss-for-specs')
             );
             if (hooksConfig.hooks[hookType].length === 0) {
               delete hooksConfig.hooks[hookType];

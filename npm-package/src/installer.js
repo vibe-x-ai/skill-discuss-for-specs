@@ -257,7 +257,7 @@ export async function uninstall(options = {}) {
   console.log('');
   console.log('✅ Uninstallation complete!');
   console.log('');
-  console.log('Note: Logs directory was preserved: ~/DiscussForSpecs/logs/');
+  console.log('Note: Logs directory was preserved: ~/.discuss-for-specs/logs/');
   console.log('      Delete it manually if you want to remove all data.');
   console.log('');
 }

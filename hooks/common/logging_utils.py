@@ -1,9 +1,9 @@
 """
-Logging utilities for DiscussForSpecs hooks.
+Logging utilities for discuss-for-specs hooks.
 
-Directory Structure:
-- ~/.config/DiscussForSpecs/  - Configuration files
-- ~/DiscussForSpecs/logs/     - Log files
+All data is stored under ~/.discuss-for-specs/
+- ~/.discuss-for-specs/hooks/  - Hook scripts
+- ~/.discuss-for-specs/logs/   - Log files
 """
 
 import logging
@@ -14,14 +14,19 @@ from typing import Optional
 
 
 # Directory paths
+def get_base_dir() -> Path:
+    """Get base directory path for discuss-for-specs."""
+    return Path.home() / ".discuss-for-specs"
+
+
 def get_config_dir() -> Path:
-    """Get configuration directory path."""
-    return Path.home() / ".config" / "DiscussForSpecs"
+    """Get configuration directory path (alias for get_base_dir)."""
+    return get_base_dir()
 
 
 def get_data_dir() -> Path:
-    """Get data directory path."""
-    return Path.home() / "DiscussForSpecs"
+    """Get data directory path (alias for get_base_dir)."""
+    return get_base_dir()
 
 
 def get_log_dir() -> Path:

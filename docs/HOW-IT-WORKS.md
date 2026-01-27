@@ -177,13 +177,11 @@ After installation, components are distributed as follows:
 ### Global (User-Level)
 
 ```
-~/.config/DiscussForSpecs/
-└── hooks/                    # Python hook scripts
-    ├── common/               # Shared utilities
-    ├── file-edit/            # File edit tracking hook
-    └── stop/                 # Precipitation check hook
-
-~/DiscussForSpecs/
+~/.discuss-for-specs/
+├── hooks/                    # Python hook scripts
+│   ├── common/               # Shared utilities
+│   ├── file-edit/            # File edit tracking hook
+│   └── stop/                 # Precipitation check hook
 └── logs/                     # Hook execution logs
     └── discuss-hooks-YYYY-MM-DD.log
 ```
@@ -225,7 +223,7 @@ When using `--target /path/to/project`:
 
 Hooks log all operations for debugging:
 
-**Location**: `~/DiscussForSpecs/logs/discuss-hooks-YYYY-MM-DD.log`
+**Location**: `~/.discuss-for-specs/logs/discuss-hooks-YYYY-MM-DD.log`
 
 **Format**:
 ```

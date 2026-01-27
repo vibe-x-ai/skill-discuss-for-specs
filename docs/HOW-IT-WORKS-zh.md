@@ -175,13 +175,11 @@ file_status:
 ### 全局（用户级别）
 
 ```
-~/.config/DiscussForSpecs/
-└── hooks/                    # Python hook 脚本
-    ├── common/               # 共享工具
-    ├── file-edit/            # 文件编辑追踪 hook
-    └── stop/                 # 沉淀检测 hook
-
-~/DiscussForSpecs/
+~/.discuss-for-specs/
+├── hooks/                    # Python hook 脚本
+│   ├── common/               # 共享工具
+│   ├── file-edit/            # 文件编辑追踪 hook
+│   └── stop/                 # 沉淀检测 hook
 └── logs/                     # Hook 执行日志
     └── discuss-hooks-YYYY-MM-DD.log
 ```
@@ -223,7 +221,7 @@ file_status:
 
 Hooks 记录所有操作用于调试：
 
-**位置**：`~/DiscussForSpecs/logs/discuss-hooks-YYYY-MM-DD.log`
+**位置**：`~/.discuss-for-specs/logs/discuss-hooks-YYYY-MM-DD.log`
 
 **格式**：
 ```

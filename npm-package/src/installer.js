@@ -4,8 +4,6 @@
 
 import { existsSync } from 'fs';
 import { join } from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 
 import {
   checkPythonEnvironment,
@@ -26,20 +24,37 @@ import {
   removeHooksConfig
 } from './platform-config.js';
 
+import {
+  showBanner,
+  createSpinner,
+  success,
+  error,
+  info,
+  warning,
+  newline,
+  showCompletionBox,
+  showUninstallBox,
+  colors
+} from './ui.js';
+
 /**
  * List supported platforms
  */
 export function listPlatforms() {
-  console.log('\nSupported Platforms:\n');
+  newline();
+  console.log(colors.bold('Supported Platforms:'));
+  newline();
   
   const detected = detectPlatform();
   
   for (const [id, config] of Object.entries(PLATFORMS)) {
-    const status = detected.includes(id) ? '✓ detected' : '○ not found';
-    console.log(`  ${config.name} (${id})`);
+    const status = detected.includes(id) 
+      ? colors.success('✓ detected') 
+      : colors.dim('○ not found');
+    console.log(`  ${colors.bold(config.name)} ${colors.dim(`(${id})`)}`);
     console.log(`    Status: ${status}`);
-    console.log(`    Config: ~/${config.configDir}/`);
-    console.log('');
+    console.log(`    Config: ${colors.dim(`~/${config.configDir}/`)}`);
+    newline();
   }
 }
 
@@ -49,16 +64,24 @@ export function listPlatforms() {
  * @param {Object} options - Install options
  */
 export async function install(options = {}) {
-  console.log('\n📦 discuss-skills installer\n');
+  // Show banner
+  showBanner();
 
   // 1. Check Python environment
-  console.log('Checking Python environment...');
+  let spinner = createSpinner('Checking Python environment...');
+  spinner.start();
+  
   const pythonCheck = await checkPythonEnvironment();
   
   if (!pythonCheck.success) {
+    spinner.fail('Python environment check failed');
+    error(
+      'Python 3 is required but was not found',
+      'brew install python3  # macOS\nsudo apt install python3  # Ubuntu'
+    );
     throw new Error('Python environment check failed. Please install Python 3 and PyYAML.');
   }
-  console.log('');
+  spinner.succeed('Python environment OK');
 
   // 2. Detect or validate platform
   let targetPlatform = options.platform;
@@ -67,6 +90,10 @@ export async function install(options = {}) {
     const detected = detectPlatform();
     
     if (detected.length === 0) {
+      error(
+        'No supported platform detected',
+        'Install Claude Code or Cursor first, or use --platform flag'
+      );
       throw new Error(
         'No supported platform detected. Please install Claude Code or Cursor first, ' +
         'or specify a platform with --platform.'
@@ -75,13 +102,14 @@ export async function install(options = {}) {
     
     if (detected.length === 1) {
       targetPlatform = detected[0];
-      console.log(`Detected platform: ${PLATFORMS[targetPlatform].name}`);
+      info(`Detected platform: ${colors.bold(PLATFORMS[targetPlatform].name)}`);
     } else {
       // Multiple platforms detected, ask user or use first
-      console.log('Multiple platforms detected:');
-      detected.forEach(p => console.log(`  - ${PLATFORMS[p].name}`));
-      console.log(`\nUsing first detected: ${PLATFORMS[detected[0]].name}`);
-      console.log('(Use --platform to specify a different one)\n');
+      info('Multiple platforms detected:');
+      detected.forEach(p => console.log(`  ${colors.dim('•')} ${PLATFORMS[p].name}`));
+      newline();
+      info(`Using: ${colors.bold(PLATFORMS[detected[0]].name)}`);
+      console.log(colors.dim('  (Use --platform to specify a different one)'));
       targetPlatform = detected[0];
     }
   }
@@ -95,13 +123,16 @@ export async function install(options = {}) {
     targetDir = resolve(options.target.replace(/^~/, process.env.HOME || ''));
     
     if (!existsSync(targetDir)) {
+      error(`Target directory does not exist: ${targetDir}`);
       throw new Error(`Target directory does not exist: ${targetDir}`);
     }
     
-    console.log(`\nInstalling for ${platformConfig.name} (project-level)...`);
-    console.log(`Target: ${targetDir}\n`);
+    newline();
+    info(`Installing for ${colors.bold(platformConfig.name)} (project-level)`);
+    console.log(colors.dim(`  Target: ${targetDir}`));
   } else {
-    console.log(`\nInstalling for ${platformConfig.name} (global)...\n`);
+    newline();
+    info(`Installing for ${colors.bold(platformConfig.name)} (global)`);
   }
 
   // 4. Get package root (where dist/ and hooks/ are)
@@ -109,87 +140,92 @@ export async function install(options = {}) {
   
   // 5. Install Skills (unless skipped)
   if (!options.skipSkills) {
-    console.log('Installing Skills...');
+    newline();
+    spinner = createSpinner('Installing Skills...');
+    spinner.start();
     
     const distDir = join(packageRoot, 'dist', targetPlatform);
     const skillsDir = getSkillsDir(targetPlatform, targetDir);
     
     if (!existsSync(distDir)) {
-      console.warn(`  ⚠ No pre-built skills found for ${targetPlatform}`);
+      spinner.warn(`No pre-built skills found for ${targetPlatform}`);
     } else {
       ensureDirectory(skillsDir);
       
       // Copy each skill
       const skills = ['discuss-coordinator', 'discuss-output'];
+      const installedSkills = [];
+      
       for (const skill of skills) {
         const srcSkill = join(distDir, skill);
         const destSkill = join(skillsDir, skill);
         
         if (existsSync(srcSkill)) {
           copyDirectory(srcSkill, destSkill);
-          console.log(`  ✓ Installed ${skill}`);
+          installedSkills.push(skill);
         }
       }
+      
+      spinner.succeed('Skills installed');
+      installedSkills.forEach(skill => success(skill, true));
     }
-    console.log('');
   }
 
   // 6. Install Hooks (unless skipped) - hooks are always global
   if (!options.skipHooks) {
-    console.log('Installing Hooks...');
+    newline();
+    spinner = createSpinner('Installing Hooks...');
+    spinner.start();
     
     if (targetDir) {
-      console.log('  (Hooks are installed globally, not in project directory)');
+      spinner.text = 'Installing Hooks (global)...';
     }
     
     const srcHooks = join(packageRoot, 'hooks');
     const destHooks = getHooksDir();
     
     if (!existsSync(srcHooks)) {
+      spinner.fail('Hooks source not found');
       throw new Error(`Hooks source not found: ${srcHooks}`);
     }
     
     // Copy hooks to config directory
     copyDirectory(srcHooks, destHooks);
-    console.log(`  ✓ Copied hooks to ${destHooks}`);
     
     // Create logs directory
     const logsDir = getLogsDir();
     ensureDirectory(logsDir);
-    console.log(`  ✓ Created logs directory: ${logsDir}`);
+    
+    spinner.succeed('Hooks installed');
+    success(`Copied to ${destHooks}`, true);
+    success(`Logs directory: ${logsDir}`, true);
     
     // Configure platform hooks
-    console.log('');
-    console.log('Configuring platform hooks...');
+    newline();
+    spinner = createSpinner('Configuring platform hooks...');
+    spinner.start();
     installHooksConfig(targetPlatform);
-    console.log('');
+    spinner.succeed('Platform hooks configured');
   }
 
-  // 7. Done
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('');
-  console.log('✅ Installation complete!');
-  console.log('');
-  console.log('Installed components:');
+  // 7. Done - show completion box
+  const components = [];
   if (!options.skipSkills) {
-    console.log(`  • Skills: ${getSkillsDir(targetPlatform, targetDir)}`);
+    components.push(`Skills: ${getSkillsDir(targetPlatform, targetDir)}`);
   }
   if (!options.skipHooks) {
-    console.log(`  • Hooks: ${getHooksDir()}`);
-    console.log(`  • Logs: ${getLogsDir()}`);
+    components.push(`Hooks: ${getHooksDir()}`);
+    components.push(`Logs: ${getLogsDir()}`);
   }
-  console.log('');
-  console.log('Next steps:');
-  console.log(`  1. Open ${platformConfig.name}`);
+  
+  const nextSteps = [`Open ${platformConfig.name}`];
   if (targetDir) {
-    console.log(`  2. Open project: ${targetDir}`);
-    console.log('  3. Start a discussion with your AI assistant');
-    console.log('  4. The hooks will automatically track and remind you to update docs');
-  } else {
-    console.log('  2. Start a discussion with your AI assistant');
-    console.log('  3. The hooks will automatically track and remind you to update docs');
+    nextSteps.push(`Open project: ${targetDir}`);
   }
-  console.log('');
+  nextSteps.push('Start a discussion with your AI assistant');
+  nextSteps.push('The hooks will automatically track your progress');
+  
+  showCompletionBox({ components, nextSteps });
 }
 
 /**
@@ -198,7 +234,8 @@ export async function install(options = {}) {
  * @param {Object} options - Uninstall options
  */
 export async function uninstall(options = {}) {
-  console.log('\n📦 discuss-skills uninstaller\n');
+  // Show banner
+  showBanner();
 
   // 1. Detect or validate platform
   let targetPlatform = options.platform;
@@ -207,57 +244,70 @@ export async function uninstall(options = {}) {
     const detected = detectPlatform();
     
     if (detected.length === 0) {
-      console.log('No supported platform detected.');
+      warning('No supported platform detected');
       return;
     }
     
     targetPlatform = detected[0];
-    console.log(`Detected platform: ${PLATFORMS[targetPlatform].name}`);
+    info(`Detected platform: ${colors.bold(PLATFORMS[targetPlatform].name)}`);
   }
 
   const platformConfig = getPlatformConfig(targetPlatform);
-  console.log(`\nUninstalling from ${platformConfig.name}...\n`);
+  newline();
+  info(`Uninstalling from ${colors.bold(platformConfig.name)}...`);
 
   // 2. Remove Skills
   if (!options.keepSkills) {
-    console.log('Removing Skills...');
+    newline();
+    let spinner = createSpinner('Removing Skills...');
+    spinner.start();
     
     const skillsDir = getSkillsDir(targetPlatform);
     const skills = ['discuss-coordinator', 'discuss-output'];
+    const removedSkills = [];
     
     for (const skill of skills) {
       const skillPath = join(skillsDir, skill);
       if (existsSync(skillPath)) {
         removeDirectory(skillPath);
-        console.log(`  ✓ Removed ${skill}`);
+        removedSkills.push(skill);
       }
     }
-    console.log('');
+    
+    if (removedSkills.length > 0) {
+      spinner.succeed('Skills removed');
+      removedSkills.forEach(skill => success(skill, true));
+    } else {
+      spinner.info('No skills to remove');
+    }
   }
 
   // 3. Remove Hooks
   if (!options.keepHooks) {
-    console.log('Removing Hooks...');
+    newline();
+    let spinner = createSpinner('Removing Hooks...');
+    spinner.start();
     
     const hooksDir = getHooksDir();
     if (existsSync(hooksDir)) {
       removeDirectory(hooksDir);
-      console.log(`  ✓ Removed ${hooksDir}`);
+      spinner.succeed('Hooks removed');
+      success(hooksDir, true);
+    } else {
+      spinner.info('No hooks to remove');
     }
     
     // Remove hooks from platform config
-    console.log('');
-    console.log('Removing platform hooks configuration...');
+    newline();
+    spinner = createSpinner('Removing platform hooks configuration...');
+    spinner.start();
     removeHooksConfig(targetPlatform);
-    console.log('');
+    spinner.succeed('Platform hooks configuration removed');
   }
 
   // 4. Done
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('');
-  console.log('✅ Uninstallation complete!');
-  console.log('');
-  console.log('Note: Logs directory was preserved: ~/.discuss-for-specs/logs/');
-  console.log('      Delete it manually if you want to remove all data.');
-  console.log('');
+  showUninstallBox(
+    'Uninstallation complete!',
+    'Note: Logs directory was preserved at ~/.discuss-for-specs/logs/\nDelete it manually if you want to remove all data.'
+  );
 }

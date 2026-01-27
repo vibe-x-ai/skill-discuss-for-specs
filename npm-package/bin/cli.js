@@ -13,6 +13,7 @@
  */
 
 import { Command } from 'commander';
+import chalk from 'chalk';
 import { install, uninstall, listPlatforms } from '../src/index.js';
 import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
@@ -31,7 +32,17 @@ const program = new Command();
 program
   .name('discuss-skills')
   .description('Cross-platform skills and hooks installer for AI assistants')
-  .version(packageJson.version);
+  .version(packageJson.version)
+  .option('--no-color', 'Disable colored output');
+
+// Handle --no-color before any command runs
+program.hook('preAction', (thisCommand) => {
+  const opts = thisCommand.opts();
+  if (opts.color === false) {
+    // Disable chalk colors
+    chalk.level = 0;
+  }
+});
 
 // Install command
 program
@@ -45,8 +56,8 @@ program
   .action(async (options) => {
     try {
       await install(options);
-    } catch (error) {
-      console.error(`\n❌ Installation failed: ${error.message}`);
+    } catch (err) {
+      console.error(`\n${chalk.red('✖')} ${chalk.bold('Installation failed:')} ${err.message}`);
       process.exit(1);
     }
   });
@@ -62,8 +73,8 @@ program
   .action(async (options) => {
     try {
       await uninstall(options);
-    } catch (error) {
-      console.error(`\n❌ Uninstallation failed: ${error.message}`);
+    } catch (err) {
+      console.error(`\n${chalk.red('✖')} ${chalk.bold('Uninstallation failed:')} ${err.message}`);
       process.exit(1);
     }
   });

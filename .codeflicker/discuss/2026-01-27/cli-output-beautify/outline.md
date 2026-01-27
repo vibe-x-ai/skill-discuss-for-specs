@@ -1,74 +1,52 @@
-# 讨论：CLI 输出美化方案
+# Discussion: CLI Output Beautification
 
-> 状态：进行中 | 轮次：R1 | 日期：2026-01-27
+> Status: Concluded | Round: R5 | Date: 2026-01-28
 
-## 🔵 当前焦点
+## ✅ Confirmed Decisions
 
-- **确定美化目标：解决什么问题？期望达到什么效果？**
+| ID | Decision | Details |
+|----|----------|---------|
+| D01 | Dependency strategy | Use npm libraries (not hand-coded) |
+| D02 | ASCII Banner | Block font style for "DISCUSS" |
+| D03 | Color scheme | Single highlight (cyan) + restrained semantic colors |
+| D04 | Library stack | `chalk` + `ora` + `figlet` + `boxen` |
+| D05 | Spinner style | dots (⠋ ⠙ ⠹ ⠸ ⠼ ⠴ ⠦ ⠧ ⠇ ⠏) |
+| D06 | Error styling | No border, arrow style, only symbol in red |
+| D07 | Non-color fallback | Auto-detect + `--no-color` flag support |
 
-## ⚪ 待讨论
+→ Full decision document: [D01-cli-beautification.md](./decisions/D01-cli-beautification.md)
 
-- [ ] 是否需要颜色支持？
-- [ ] 是否需要进度指示器（spinner）？
-- [ ] 是否需要 box/frame 样式？
-- [ ] 是否保持零依赖还是引入美化库？
-- [ ] 需要支持哪些终端环境？
+## ❌ Rejected
 
-## 📋 现状分析
+- Hand-coded ASCII art (maintenance burden)
+- Gradient colors (too flashy)
+- Zero-dependency approach (limited effects)
+- Box/border for errors (too heavy)
+- Full red block for errors (not aesthetically pleasing)
 
-### 当前输出风格
+## 📁 Archive
 
+### Before vs After
+
+**Before:**
 ```
 📦 discuss-skills installer
 
 Checking Python environment...
-
-Detected platform: Claude Code
-
-Installing for Claude Code (global)...
-
 Installing Skills...
   ✓ Installed discuss-coordinator
-  ✓ Installed discuss-output
-
-Installing Hooks...
-  ✓ Copied hooks to ~/.discuss-for-specs/hooks
-  ✓ Created logs directory: ~/.discuss-for-specs/logs
-
-Configuring platform hooks...
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-✅ Installation complete!
-
-Installed components:
-  • Skills: ~/.claude/skills
-  • Hooks: ~/.discuss-for-specs/hooks
-  • Logs: ~/.discuss-for-specs/logs
-
-Next steps:
-  1. Open Claude Code
-  2. Start a discussion with your AI assistant
-  3. The hooks will automatically track and remind you to update docs
 ```
 
-### 当前特点
+**After:**
+```
+  ██████╗ ██╗███████╗ ██████╗██╗   ██╗███████╗███████╗
+  ██╔══██╗██║██╔════╝██╔════╝██║   ██║██╔════╝██╔════╝
+  ██║  ██║██║███████╗██║     ██║   ██║███████╗███████╗
+  ██║  ██║██║╚════██║██║     ██║   ██║╚════██║╚════██║
+  ██████╔╝██║███████║╚██████╗╚██████╔╝███████║███████║
+  ╚═════╝ ╚═╝╚══════╝ ╚═════╝ ╚═════╝ ╚══════╝╚══════╝
+              Skills Installer v1.0.0
 
-| 方面 | 现状 |
-|------|------|
-| 结构 | 清晰的步骤式输出 |
-| 符号 | 使用 emoji（📦 ✓ ✅ •）和 Unicode 分隔线 |
-| 颜色 | 无 |
-| 进度 | 无动态指示 |
-| 依赖 | 仅 commander，无额外美化库 |
-
-## ✅ 已确认
-
-（暂无）
-
-## ❌ 已否决
-
-（暂无）
-
-## 📁 归档
-
-（暂无）
+✔ Checking Python environment
+◐ Installing Skills...
+```

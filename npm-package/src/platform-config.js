@@ -149,7 +149,7 @@ export function installHooksConfig(platformId) {
       try {
         settings = JSON.parse(readFileSync(settingsPath, 'utf-8'));
       } catch (e) {
-        console.warn(`Warning: Could not parse ${settingsPath}, creating new file`);
+        // Silent - will create new file
       }
     }
 
@@ -160,7 +160,7 @@ export function installHooksConfig(platformId) {
     };
 
     writeFileSync(settingsPath, JSON.stringify(settings, null, 2), 'utf-8');
-    console.log(`  ✓ Updated ${settingsPath}`);
+    // Note: caller handles the success message
     
   } else if (config.hooksFormat === 'cursor') {
     // Cursor: create/update hooks.json
@@ -181,8 +181,10 @@ export function installHooksConfig(platformId) {
     };
 
     writeFileSync(settingsPath, JSON.stringify(hooksConfig, null, 2), 'utf-8');
-    console.log(`  ✓ Updated ${settingsPath}`);
+    // Note: caller handles the success message
   }
+  
+  return settingsPath;
 }
 
 /**
@@ -221,7 +223,7 @@ export function removeHooksConfig(platformId) {
       }
 
       writeFileSync(settingsPath, JSON.stringify(settings, null, 2), 'utf-8');
-      console.log(`  ✓ Removed hooks from ${settingsPath}`);
+      // Note: caller handles the success message
       
     } else if (config.hooksFormat === 'cursor') {
       const hooksConfig = JSON.parse(readFileSync(settingsPath, 'utf-8'));
@@ -240,9 +242,11 @@ export function removeHooksConfig(platformId) {
       }
 
       writeFileSync(settingsPath, JSON.stringify(hooksConfig, null, 2), 'utf-8');
-      console.log(`  ✓ Removed hooks from ${settingsPath}`);
+      // Note: caller handles the success message
     }
   } catch (e) {
-    console.warn(`Warning: Could not update ${settingsPath}: ${e.message}`);
+    // Silent - caller handles errors
   }
+  
+  return settingsPath;
 }

@@ -56,49 +56,45 @@ export function getLogsDir() {
 /**
  * Check Python environment and dependencies
  * 
- * @returns {Promise<{success: boolean, version?: string, errors: string[]}>}
+ * Note: This function is silent (no console output) to work with ora spinners.
+ * The caller should handle displaying the results.
+ * 
+ * @returns {Promise<{success: boolean, version?: string, errors: string[], warnings: string[], details: string[]}>}
  */
 export async function checkPythonEnvironment() {
   const result = {
     success: true,
     version: null,
     errors: [],
-    warnings: []
+    warnings: [],
+    details: []  // Collected details for the caller to display
   };
 
   // Check Python 3
   try {
     const { stdout } = await exec('python3 --version');
     result.version = stdout.trim().replace('Python ', '');
-    console.log(`✓ Python ${result.version} detected`);
+    result.details.push(`Python ${result.version} detected`);
   } catch (error) {
     result.success = false;
     result.errors.push('Python 3 is not installed or not in PATH');
-    console.error('❌ Python 3 is required but not found.');
-    console.error('');
-    console.error('   Please install Python 3:');
-    console.error('     macOS:   brew install python3');
-    console.error('     Ubuntu:  sudo apt install python3');
-    console.error('     Windows: https://www.python.org/downloads/');
     return result;
   }
 
   // Check PyYAML
   try {
     await exec('python3 -c "import yaml"');
-    console.log('✓ PyYAML is installed');
+    result.details.push('PyYAML is installed');
   } catch (error) {
     result.warnings.push('PyYAML is not installed');
-    console.log('⚠ PyYAML is not installed. Attempting to install...');
+    result.details.push('PyYAML is not installed, attempting to install...');
     
     try {
       await exec('pip3 install pyyaml');
-      console.log('✓ PyYAML installed successfully');
+      result.details.push('PyYAML installed successfully');
     } catch (pipError) {
       result.success = false;
-      result.errors.push('Failed to install PyYAML');
-      console.error('❌ Failed to install PyYAML. Please install manually:');
-      console.error('   pip3 install pyyaml');
+      result.errors.push('Failed to install PyYAML. Please install manually: pip3 install pyyaml');
     }
   }
 

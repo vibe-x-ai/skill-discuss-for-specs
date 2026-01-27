@@ -1,0 +1,76 @@
+# Discussion Metadata
+topic: "CLI Architecture Refactor - From Python to TypeScript"
+created: 2026-01-27
+current_round: 5
+status: completed
+
+# Decision Tracking
+decisions:
+  - id: D01
+    title: "Adopt multi-subcommand CLI design"
+    status: confirmed
+    confirmed_at: 2
+    doc_path: "decisions/D01-cli-subcommand-design.md"
+
+  - id: D02
+    title: "Hybrid output format (human-readable + --json)"
+    status: confirmed
+    confirmed_at: 3
+    doc_path: "decisions/D02-output-format.md"
+
+  - id: D03
+    title: "Rich tiered error messages (ERROR → HINT → ACTION)"
+    status: confirmed
+    confirmed_at: 3
+    doc_path: "decisions/D03-error-format.md"
+
+  - id: D04
+    title: "Atomic command list confirmed (6 + 3 commands)"
+    status: confirmed
+    confirmed_at: 3
+    doc_path: "decisions/D04-atomic-commands.md"
+
+  - id: D05
+    title: "Build method: direct tsc compilation"
+    status: confirmed
+    confirmed_at: 4
+    doc_path: "decisions/D05-build-method.md"
+
+  - id: D06
+    title: "Platform integration: CLI only, no shell wrapper"
+    status: confirmed
+    confirmed_at: 4
+    doc_path: "decisions/D06-platform-integration.md"
+
+  - id: D07
+    title: "Iteration plan: one-time refactor, develop after discussion"
+    status: confirmed
+    confirmed_at: 4
+    doc_path: null
+
+# Rejected Solutions
+rejected:
+  - id: R01
+    title: "Continue using Python"
+    reason: "Increases user dependency burden, inconsistent tech stack"
+    rejected_at: 1
+
+  - id: R02
+    title: "Use npx for installation"
+    reason: "Changed to npm install -g for stability and speed"
+    rejected_at: 1
+
+  - id: R03
+    title: "Keep Python as fallback"
+    reason: "Simplify architecture, assume users have Node.js"
+    rejected_at: 2
+
+  - id: R04
+    title: "Shell + CLI hybrid approach"
+    reason: "Increases complexity, not Windows-friendly"
+    rejected_at: 4
+
+  - id: R05
+    title: "esbuild bundling"
+    reason: "tsc is simpler, clearer stack traces"
+    rejected_at: 4

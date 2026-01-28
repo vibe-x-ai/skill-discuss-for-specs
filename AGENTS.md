@@ -19,14 +19,14 @@ This document provides guidance for AI agents working on this project.
 
 | Skill | Responsibility |
 |-------|---------------|
-| `discuss-mode` | Discussion facilitation, problem tracking, consensus recognition, decision precipitation, file management |
+| `discuss-for-specs` | Discussion facilitation, problem tracking, consensus recognition, decision precipitation, file management |
 
 ### Directory Structure (Mechanism-Based)
 
 ```
 skill-discuss-for-specs/
 ├── skills/              # 📝 Markdown instructions for AI
-│   └── discuss-mode/          # Unified discussion skill
+│   └── discuss-for-specs/          # Unified discussion skill
 ├── hooks/               # ⚡ Python automation scripts
 │   ├── file-edit/           # File edit tracking
 │   ├── stop/                # Precipitation checks
@@ -42,7 +42,7 @@ skill-discuss-for-specs/
 ### 1. Skill-Based Architecture
 
 This project provides discussion facilitation capabilities through a single unified Skill:
-- `discuss-mode`: Handles all discussion logic (in `skills/discuss-mode/SKILL.md`)
+- `discuss-for-specs`: Handles all discussion logic (in `skills/discuss-for-specs/SKILL.md`)
 
 **To use discussion capabilities**: Load and follow the Skill. All usage details are documented in the SKILL.md file.
 
@@ -71,7 +71,7 @@ Templates for new discussions are in `templates/`:
 
 | File | Purpose |
 |------|---------|
-| `skills/discuss-mode/SKILL.md` | Unified discussion skill instructions |
+| `skills/discuss-for-specs/SKILL.md` | Unified discussion skill instructions |
 | `config/default.yaml` | Default configuration |
 | `hooks/stop/check_precipitation.py` | Decision precipitation detection |
 | `hooks/file-edit/track_file_edit.py` | File edit tracking |

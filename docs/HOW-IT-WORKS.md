@@ -16,7 +16,7 @@ Discussion Mode uses a **Single-Skill + Hooks** architecture:
 │  ┌────────────────────────────────────────────────────────────┐ │
 │  │                         Skill                               │ │
 │  │  ┌──────────────────────────────────────────────────────┐  │ │
-│  │  │                   discuss-mode                        │  │ │
+│  │  │                   discuss-for-specs                   │  │ │
 │  │  │  • Three Roles (Socratic, Devil's Advocate, Connector)│  │ │
 │  │  │  • Problem Type Differentiation                       │  │ │
 │  │  │  • Discussion-First Principle                         │  │ │
@@ -37,14 +37,14 @@ Discussion Mode uses a **Single-Skill + Hooks** architecture:
 ```
 
 > **Note**: Previous versions used two separate Skills (`discuss-coordinator` + `discuss-output`). 
-> As of 2026-01-28, these have been merged into a single `discuss-mode` Skill.
-> See [Architecture Decision D7](../specs/discuss-mode-v1/3-architecture.md#d7-skill-architecture-merge).
+> As of 2026-01-28, these have been merged into a single `discuss-for-specs` Skill.
+> See [Architecture Decision D7](../specs/discuss-for-specs-v1/3-architecture.md#d7-skill-architecture-merge).
 
 ---
 
 ## Skill Architecture
 
-### discuss-mode
+### discuss-for-specs
 
 **Purpose**: Facilitates in-depth discussions, tracks problems, guides decision-making, and manages structured output.
 
@@ -149,7 +149,7 @@ Each discussion creates a structured directory:
 
 > **Note**: Previous versions used `discuss/` (without dot). As of 2026-01-28, 
 > the standardized location is `.discuss/` (hidden directory).
-> See [Architecture Decision D8](../specs/discuss-mode-v1/3-architecture.md#d8-discussion-directory-structure).
+> See [Architecture Decision D8](../specs/discuss-for-specs-v1/3-architecture.md#d8-discussion-directory-structure).
 
 ### outline.md
 
@@ -207,7 +207,7 @@ notes:
 
 > **Note**: Previous versions required the AI agent to maintain meta.yaml. 
 > As of 2026-01-28, meta.yaml is fully automated by Hooks.
-> See [Architecture Decision D9](../specs/discuss-mode-v1/3-architecture.md#d9-metayaml-programmatic-automation).
+> See [Architecture Decision D9](../specs/discuss-for-specs-v1/3-architecture.md#d9-metayaml-programmatic-automation).
 
 ---
 
@@ -233,7 +233,7 @@ After installation, components are distributed as follows:
 ```
 ~/.claude/
 ├── skills/
-│   └── discuss-mode/         # Single merged skill
+│   └── discuss-for-specs/         # Single merged skill
 └── settings.json             # Hooks configuration
 ```
 
@@ -241,7 +241,7 @@ After installation, components are distributed as follows:
 ```
 ~/.cursor/
 ├── skills/
-│   └── discuss-mode/         # Single merged skill
+│   └── discuss-for-specs/         # Single merged skill
 └── hooks.json                # Hooks configuration
 ```
 
@@ -252,7 +252,7 @@ When using `--target /path/to/project`:
 /path/to/project/
 └── .cursor/                  # or .claude/
     └── skills/
-        └── discuss-mode/
+        └── discuss-for-specs/
 ```
 
 ---
@@ -288,7 +288,7 @@ Hooks log all operations for debugging:
 
 - [README](../README.md) - Quick start and installation
 - [AGENTS.md](../AGENTS.md) - Guidelines for AI agents
-- [Architecture Design](../specs/discuss-mode-v1/3-architecture.md) - Design decisions
+- [Architecture Design](../specs/discuss-for-specs-v1/3-architecture.md) - Design decisions
 - [Discussion Records](./../.discuss/) - Historical discussions
 
 ---

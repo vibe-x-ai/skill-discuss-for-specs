@@ -89,6 +89,72 @@ class TestFindDiscussRoot:
         
         assert result == discuss_dir
 
+    def test_finds_root_from_outline_without_meta(self, tmp_path):
+        """Test finding root from outline.md when meta.yaml doesn't exist yet.
+        
+        This tests the chicken-and-egg fix: the hook should be able to find
+        the discuss root even before meta.yaml is created.
+        """
+        # Create discussion structure WITHOUT meta.yaml
+        discuss_dir = tmp_path / ".discuss" / "2026-01-28" / "test-topic"
+        discuss_dir.mkdir(parents=True)
+        outline = discuss_dir / "outline.md"
+        outline.write_text("# Test Topic")
+        
+        result = find_discuss_root(str(outline))
+        
+        assert result == discuss_dir
+    
+    def test_finds_root_from_pattern_without_files(self, tmp_path):
+        """Test finding root from directory pattern when no files exist yet.
+        
+        This tests the case where neither meta.yaml nor outline.md exists,
+        but the directory structure matches .discuss/YYYY-MM-DD/topic/.
+        """
+        # Create directory matching the pattern but with no files
+        discuss_dir = tmp_path / ".discuss" / "2026-01-28" / "new-topic"
+        discuss_dir.mkdir(parents=True)
+        
+        result = find_discuss_root(str(discuss_dir))
+        
+        assert result == discuss_dir
+    
+    def test_finds_root_from_subdirectory_pattern(self, tmp_path):
+        """Test finding root from a subdirectory within discuss directory."""
+        # Create discuss directory with decisions subdirectory
+        discuss_dir = tmp_path / ".discuss" / "2026-01-28" / "my-topic"
+        decisions_dir = discuss_dir / "decisions"
+        decisions_dir.mkdir(parents=True)
+        
+        # Search from decisions subdirectory
+        result = find_discuss_root(str(decisions_dir))
+        
+        # Should find the parent topic directory
+        assert result == discuss_dir
+    
+    def test_pattern_requires_valid_date_format(self, tmp_path):
+        """Test that pattern matching requires valid date format."""
+        # Create directory with invalid date format
+        invalid_dir = tmp_path / ".discuss" / "not-a-date" / "topic"
+        invalid_dir.mkdir(parents=True)
+        
+        result = find_discuss_root(str(invalid_dir))
+        
+        # Should not match (no valid date)
+        assert result is None
+    
+    def test_pattern_matching_with_outline_takes_priority(self, tmp_path):
+        """Test that outline.md detection works even with non-standard path."""
+        # Create a directory that doesn't match the pattern
+        discuss_dir = tmp_path / "custom-discuss" / "topic"
+        discuss_dir.mkdir(parents=True)
+        (discuss_dir / "outline.md").write_text("# Topic")
+        
+        result = find_discuss_root(str(discuss_dir))
+        
+        # Should find via outline.md rule
+        assert result == discuss_dir
+
 
 class TestGetDecisionPath:
     """Tests for get_decision_path function."""

@@ -36,7 +36,7 @@ discuss-skills install --platform claude-code
 
 # 2. Verify Skills installation
 ls -la ~/.claude/skills/
-# Expected: discuss-mode/ directory exists (single merged skill)
+# Expected: discuss-for-specs/ directory exists (single merged skill)
 
 # 3. Verify Hooks installation
 ls -la ~/.discuss-for-specs/hooks/
@@ -278,7 +278,7 @@ conda install pyyaml
 
 | Version | Date | Changes |
 |---------|------|---------|
-| 0.2.0 | 2026-01-28 | Updated for merged skill (`discuss-mode`), new directory structure (`.discuss/`), session-based round counting |
+| 0.2.0 | 2026-01-28 | Updated for merged skill (`discuss-for-specs`), new directory structure (`.discuss/`), session-based round counting |
 | 0.1.0 | 2026-01-27 | Initial verification guide |
 
 ---

@@ -6,6 +6,10 @@ An AI-powered discussion facilitation system that helps generate high-quality sp
 
 ![Discussion Mode](./assets/banner.jpg)
 
+> Click the image below to watch the demo video
+
+[![Watch the Demo](./assets/cover.jpg)](https://s16-def.ap4r.com/kos/s101/nlav112218/mengshou/use-discuss-for-specs.0242e2cac0963606.mp4)
+
 ---
 
 ## 💡 The Problem
@@ -183,12 +187,14 @@ Use Discussion Mode whenever you need to clarify and refine ideas:
 
 ## ✨ Technical Features
 
-- **Single-Skill Architecture**: Unified `discuss-mode` Skill with template separation for easy maintenance
+- **Single-Skill Architecture**: Unified `discuss-for-specs` Skill with template separation for easy maintenance
 - **Intelligent Precipitation**: Automatic detection of unprecipitated decisions with configurable reminders
 - **Hook-Based Automation**: Process work (round counting, state checking) handled by Python scripts, not AI
-- **Multi-Platform Support**: Claude Code (ready), Cursor & VS Code (planned)
+- **Multi-Platform Support**: Claude Code & Cursor (ready), more agents coming soon
 - **Structured Tracking**: Problem lifecycle management, trend analysis, and convergence detection
 - **Cross-Platform Design**: Shared Skill content with platform-specific adaptations
+
+> **Note**: Currently supports **Claude Code** and **Cursor**. Support for additional AI coding agents (Windsurf, Cline, etc.) is actively being developed. Stay tuned for updates!
 
 ---
 
@@ -234,7 +240,7 @@ npx discuss-skills uninstall --platform cursor
 ```
 skill-discuss-for-specs/
 ├── skills/              # 📝 Skill instructions (Markdown for AI)
-│   └── discuss-mode/          # Single merged discussion skill
+│   └── discuss-for-specs/          # Single merged discussion skill
 ├── hooks/               # ⚡ Automation scripts (Python)
 │   ├── file-edit/           # File edit tracking hook
 │   ├── stop/                # Precipitation check hook

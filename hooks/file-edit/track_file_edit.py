@@ -38,6 +38,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from common.file_utils import find_discuss_root
 from common.logging_utils import (
+    log_action,
     log_debug,
     log_discuss_detection,
     log_error,
@@ -46,6 +47,7 @@ from common.logging_utils import (
     log_hook_start,
     log_info,
     log_meta_update,
+    log_skip,
 )
 from common.meta_parser import (
     create_initial_meta,
@@ -188,7 +190,7 @@ def main():
         discuss_root = find_discuss_root(str(file_path))
         
         if discuss_root is None:
-            log_debug(f"Not a discussion file: {file_path}")
+            log_skip(f"Not a discussion file")
             log_hook_end(HOOK_NAME, {}, success=True)
             allow_and_exit()
         
@@ -196,7 +198,7 @@ def main():
         file_type = determine_file_type(file_path, discuss_root)
         
         if file_type is None:
-            log_debug(f"Not a tracked file type: {file_path}")
+            log_skip(f"Not a tracked file type")
             log_hook_end(HOOK_NAME, {}, success=True)
             allow_and_exit()
         
@@ -232,16 +234,17 @@ def main():
             
             if is_first_update:
                 # Increment round counter
+                old_round = current_round
                 current_round += 1
                 meta["current_round"] = current_round
-                log_info(f"Round incremented to {current_round} (first outline update in session)")
+                log_action(f"Round: {old_round} -> {current_round} (first update in session)")
             else:
-                log_debug("Additional outline update in same session, round not incremented")
+                log_skip("Additional outline update in same session")
         
         elif file_type in ["decisions", "notes"]:
             # Update file entry with last_updated_round
             meta = update_file_entry(meta, file_type, file_path, discuss_root, current_round)
-            log_info(f"Updated {file_type} entry: {file_path.name} at round {current_round}")
+            log_action(f"Updated {file_type}: {file_path.name} (round {current_round})")
         
         # Save updated meta
         save_meta(str(discuss_root), meta)

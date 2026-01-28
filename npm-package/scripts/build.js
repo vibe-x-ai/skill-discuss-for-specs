@@ -26,8 +26,8 @@ const DIST_DIR = join(PROJECT_ROOT, 'dist');
 // Platforms to build for
 const PLATFORMS = ['claude-code', 'cursor'];
 
-// Skills to build (merged into single discuss-mode as per D7)
-const SKILLS = ['discuss-mode'];
+// Skills to build (merged into single discuss-for-specs as per D7)
+const SKILLS = ['discuss-for-specs'];
 
 /**
  * Copy hooks from repository to npm package

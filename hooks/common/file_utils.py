@@ -2,8 +2,14 @@
 File system utilities for Hook scripts.
 """
 
+import re
 from pathlib import Path
 from typing import Optional
+
+
+# Pattern to match discussion directory: .discuss/YYYY-MM-DD/[topic-slug]
+# This regex matches paths ending with .discuss/date/topic structure
+DISCUSS_DIR_PATTERN = re.compile(r"\.discuss[/\\]\d{4}-\d{2}-\d{2}[/\\][^/\\]+$")
 
 
 def ensure_directory(path: str) -> Path:
@@ -23,7 +29,16 @@ def ensure_directory(path: str) -> Path:
 
 def find_discuss_root(current_path: str) -> Optional[Path]:
     """
-    Find discussion root directory by looking for meta.yaml.
+    Find discussion root directory.
+    
+    Recognition rules (checks in order, returns on first match):
+    1. Contains meta.yaml (existing discussions with metadata)
+    2. Contains outline.md (new discussions without meta yet)
+    3. Path matches .discuss/YYYY-MM-DD/[topic]/ pattern (structural match)
+    
+    This approach solves the "chicken-and-egg" problem where meta.yaml
+    needs to be created by the hook, but the hook couldn't find the
+    discuss root without meta.yaml existing first.
     
     Args:
         current_path: Starting path to search from
@@ -33,10 +48,20 @@ def find_discuss_root(current_path: str) -> Optional[Path]:
     """
     p = Path(current_path).resolve()
     
-    # Search upward for meta.yaml
+    # Search upward through parent directories
     for parent in [p] + list(p.parents):
-        meta_file = parent / "meta.yaml"
-        if meta_file.exists():
+        # Rule 1: Has meta.yaml (existing discussions)
+        if (parent / "meta.yaml").exists():
+            return parent
+        
+        # Rule 2: Has outline.md (new discussions without meta yet)
+        if (parent / "outline.md").exists():
+            return parent
+        
+        # Rule 3: Path matches .discuss/YYYY-MM-DD/topic pattern
+        # This handles the case where outline.md is being created
+        path_str = str(parent)
+        if DISCUSS_DIR_PATTERN.search(path_str):
             return parent
     
     return None

@@ -41,11 +41,13 @@ from typing import List, Tuple
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from common.logging_utils import (
+    log_action,
     log_debug,
     log_error,
     log_hook_end,
     log_hook_start,
     log_info,
+    log_skip,
     log_stale_detection,
     log_warning,
 )
@@ -218,7 +220,7 @@ def main():
         
         # Check if this is a continuation after stop hook already triggered
         if input_data and is_stop_hook_active(input_data):
-            log_debug("stop_hook_active is True, bypassing check")
+            log_skip("stop_hook_active is True, bypassing check")
             # Clean up session even when bypassing
             if session_id:
                 delete_session(platform.value, session_id)
@@ -227,21 +229,21 @@ def main():
         
         # NEW: Check if user is in discussion mode (outline was updated)
         if not session_id or not is_in_discussion_mode(platform.value, session_id):
-            log_info("Not in discussion mode (no outline updates), skipping staleness check")
+            log_skip("Not in discussion mode (no outline updates)")
             # Clean up session if exists
             if session_id:
                 delete_session(platform.value, session_id)
             log_hook_end(HOOK_NAME, {}, success=True)
             allow_and_exit()
         
-        log_info("In discussion mode, checking for stale files")
+        log_action("Discussion mode detected")
         
         # Get outline paths updated in this session
         outline_paths = get_updated_outline_paths(platform.value, session_id)
         log_debug(f"Updated outlines: {outline_paths}")
         
         if not outline_paths:
-            log_debug("No outline paths recorded, allowing operation")
+            log_skip("No outline paths recorded")
             if session_id:
                 delete_session(platform.value, session_id)
             log_hook_end(HOOK_NAME, {}, success=True)
@@ -291,12 +293,12 @@ def main():
             combined_reminder = "\n\n---\n\n".join(reminder for reminder, _ in stale_reminders)
             
             if has_force:
-                log_warning(f"Blocking with {len(stale_reminders)} stale reminder(s) [FORCE]")
+                log_action(f"Blocking: {len(stale_reminders)} stale reminder(s) [FORCE]")
                 log_hook_end(HOOK_NAME, {"action": "block", "force": True}, success=True)
                 block_and_exit(combined_reminder, platform)
             else:
                 # Suggest but don't block for non-force reminders
-                log_info(f"Suggesting update for {len(stale_reminders)} stale item(s)")
+                log_action(f"Suggesting update: {len(stale_reminders)} stale item(s)")
                 # For suggestions, we still allow but include the message
                 # This depends on platform support - for now, we block with suggestion
                 log_hook_end(HOOK_NAME, {"action": "suggest"}, success=True)

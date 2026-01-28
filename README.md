@@ -202,21 +202,29 @@ Use Discussion Mode whenever you need to clarify and refine ideas:
 
 ### Installation
 
+**Option 1: Use npx (no install needed)**
 ```bash
 # One-command install (auto-detects platform)
-npx discuss-skills install
+npx discuss-for-specs install
 
 # Or specify platform explicitly
-npx discuss-skills install --platform cursor
-npx discuss-skills install --platform claude-code
+npx discuss-for-specs install --platform cursor
+npx discuss-for-specs install --platform claude-code
+```
 
-# Install to a specific project directory
-npx discuss-skills install --platform cursor --target ~/my-project
+**Option 2: Global install (recommended for frequent use)**
+```bash
+# Install globally
+npm install -g discuss-for-specs
+
+# Then use directly
+discuss-for-specs install --platform claude-code
+discuss-for-specs install --platform cursor --target ~/my-project
 ```
 
 ### Requirements
 
-- **Node.js** 16+ (for npx)
+- **Node.js** 16+
 - **Python** 3.8+ with PyYAML (auto-checked during install)
 
 ### Start a Discussion
@@ -230,7 +238,8 @@ The Agent will guide you through a structured conversation, tracking decisions a
 ### Uninstall
 
 ```bash
-npx discuss-skills uninstall --platform cursor
+discuss-for-specs uninstall --platform cursor
+# or: npx discuss-for-specs uninstall --platform cursor
 ```
 
 ---
@@ -299,14 +308,14 @@ cd .. && python -m pytest tests/
 
 ```bash
 # List supported platforms
-npx discuss-skills platforms
+npx discuss-for-specs platforms
 
 # Install with options
-npx discuss-skills install --platform cursor --skip-hooks
-npx discuss-skills install --platform claude-code --skip-skills
+npx discuss-for-specs install --platform cursor --skip-hooks
+npx discuss-for-specs install --platform claude-code --skip-skills
 
 # Uninstall
-npx discuss-skills uninstall --platform cursor
+npx discuss-for-specs uninstall --platform cursor
 ```
 
 ---

@@ -10,7 +10,7 @@
 
 - [ ] Create `config/platforms.yaml`
 - [ ] Add header files for Cursor
-- [ ] Create npm package `discuss-skills`
+- [ ] Create npm package `discuss-for-specs`
 - [ ] Implement CLI commands (Node.js)
 
 ## ✅ Confirmed

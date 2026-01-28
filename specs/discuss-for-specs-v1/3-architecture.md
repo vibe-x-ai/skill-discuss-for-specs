@@ -36,7 +36,7 @@
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                     Build Layer                              │
-│              npm package: discuss-skills                     │
+│              npm package: discuss-for-specs                     │
 │    (CLI commands: install, platforms, version)               │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -113,22 +113,22 @@ Create `config/platforms.yaml` to centrally manage platform information.
 
 #### Final Decision
 
-Publish `discuss-skills` package via npm, providing bin commands.
+Publish `discuss-for-specs` package via npm, providing bin commands.
 
 #### Expected Commands
 
 ```bash
 # Install to current project
-npx discuss-skills install --platform cursor
+npx discuss-for-specs install --platform cursor
 
 # Install to specific directory
-npx discuss-skills install --platform claude-code --target ~/my-project
+npx discuss-for-specs install --platform claude-code --target ~/my-project
 
 # View supported platforms
-npx discuss-skills platforms
+npx discuss-for-specs platforms
 
 # View version
-npx discuss-skills --version
+npx discuss-for-specs --version
 ```
 
 > 📎 **Original Discussion**: [D04-npm-distribution.md](../../.discuss/2026-01-19/spec-kit-evaluation/decisions/D04-npm-distribution.md)
@@ -142,7 +142,7 @@ npx discuss-skills --version
 
 #### Final Decision
 
-- **Package Name**: `discuss-skills`
+- **Package Name**: `discuss-for-specs`
 - **Language**: Node.js (TypeScript optional)
 - **Dependencies**: Minimized, may only need `commander` or native parsing
 
@@ -209,7 +209,7 @@ skills/
 #### Impact on npm Package
 
 ```
-discuss-skills/
+discuss-for-specs/
 ├── dist/
 │   ├── claude-code/
 │   │   └── discuss-mode/         # Changed from discuss-coordinator + discuss-output

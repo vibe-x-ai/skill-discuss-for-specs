@@ -1,6 +1,6 @@
 # Verification Guide
 
-This document provides end-to-end test scenarios to verify that `discuss-skills` is correctly installed and functioning.
+This document provides end-to-end test scenarios to verify that `discuss-for-specs` is correctly installed and functioning.
 
 > **Last Updated**: 2026-01-28
 
@@ -31,8 +31,8 @@ python3 -c "import yaml" && echo "PyYAML OK"
 
 ```bash
 # 1. Install (specify your platform)
-discuss-skills install --platform claude-code
-# or: discuss-skills install --platform cursor
+discuss-for-specs install --platform claude-code
+# or: discuss-for-specs install --platform cursor
 
 # 2. Verify Skills installation
 ls -la ~/.claude/skills/

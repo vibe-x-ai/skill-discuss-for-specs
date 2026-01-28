@@ -30,7 +30,7 @@ Provide a convenient installation method so users can install Skills with a sing
 
 | Solution | Description | Advantages | Disadvantages | Decision |
 |----------|-------------|------------|---------------|----------|
-| npm package | `npx discuss-skills install` | Standardized; no download needed; good version management | Requires Node.js environment | ✅ |
+| npm package | `npx discuss-for-specs install` | Standardized; no download needed; good version management | Requires Node.js environment | ✅ |
 | Installation script | `./install.sh --platform cursor` | Simple | Need to download script first | ❌ |
 | Manual copy | Users manually copy files | Simplest | Poor experience; error-prone | ❌ |
 | Git clone | Run build after `git clone` | Good version control | Users need to understand build process | ❌ |
@@ -41,11 +41,11 @@ Provide a convenient installation method so users can install Skills with a sing
 
 ### Chosen Solution
 
-Publish `discuss-skills` package via npm, providing bin commands.
+Publish `discuss-for-specs` package via npm, providing bin commands.
 
 ### Decision Rationale
 
-1. **User Experience**: `npx discuss-skills install` - done with one command
+1. **User Experience**: `npx discuss-for-specs install` - done with one command
 2. **Version Management**: npm has built-in version management
 3. **No Pre-download**: `npx` runs directly
 4. **Industry Standard**: Like `create-react-app`, `specify`, etc.
@@ -54,13 +54,13 @@ Publish `discuss-skills` package via npm, providing bin commands.
 
 ```bash
 # Install to current project
-npx discuss-skills install --platform cursor
+npx discuss-for-specs install --platform cursor
 
 # Install to specific directory
-npx discuss-skills install --platform claude-code --target ~/my-project
+npx discuss-for-specs install --platform claude-code --target ~/my-project
 
 # View supported platforms
-npx discuss-skills platforms
+npx discuss-for-specs platforms
 ```
 
 ---

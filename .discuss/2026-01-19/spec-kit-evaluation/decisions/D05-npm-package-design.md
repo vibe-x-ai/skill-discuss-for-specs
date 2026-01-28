@@ -32,8 +32,8 @@ Design a concise, easy-to-use npm package.
 
 | Option | Pros | Cons | Decision |
 |--------|------|------|----------|
-| `discuss-skills` | Descriptive; easy to remember | Slightly longer | ✅ |
-| `skill-discuss` | Consistent with project name | Less intuitive than discuss-skills | ❌ |
+| `discuss-for-specs` | Descriptive; easy to remember | Slightly longer | ✅ |
+| `skill-discuss` | Consistent with project name | Less intuitive than discuss-for-specs | ❌ |
 | `dskill` | Short | Meaning unclear | ❌ |
 
 ### Implementation Language
@@ -49,13 +49,13 @@ Design a concise, easy-to-use npm package.
 
 ### Chosen Solution
 
-- **Package Name**: `discuss-skills`
+- **Package Name**: `discuss-for-specs`
 - **Language**: Node.js (TypeScript optional)
 - **Dependencies**: Minimized, may only need `commander` or native parsing
 
 ### Decision Rationale
 
-1. **Clear Package Name**: `discuss-skills` intuitively expresses functionality
+1. **Clear Package Name**: `discuss-for-specs` intuitively expresses functionality
 2. **Node.js**: Most mature npm ecosystem, great `npx` experience
 3. **Minimal Dependencies**: Reduces installation time and potential issues
 
@@ -63,9 +63,9 @@ Design a concise, easy-to-use npm package.
 
 ```json
 {
-  "name": "discuss-skills",
+  "name": "discuss-for-specs",
   "bin": {
-    "discuss-skills": "./bin/cli.js"
+    "discuss-for-specs": "./bin/cli.js"
   },
   "dependencies": {
     // Minimal or no dependencies
@@ -75,10 +75,10 @@ Design a concise, easy-to-use npm package.
 
 Command examples:
 ```bash
-npx discuss-skills install --platform cursor
-npx discuss-skills install --platform claude-code --target ~/project
-npx discuss-skills platforms
-npx discuss-skills --version
+npx discuss-for-specs install --platform cursor
+npx discuss-for-specs install --platform claude-code --target ~/project
+npx discuss-for-specs platforms
+npx discuss-for-specs --version
 ```
 
 ---

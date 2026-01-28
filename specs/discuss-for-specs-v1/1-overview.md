@@ -16,7 +16,7 @@ This project adopts spec-kit's cross-platform distribution architecture to provi
 
 1. **Cross-Platform Support**: Cover Claude Code, Cursor, GitHub Copilot, Windsurf, Gemini CLI
 2. **Unified Distribution Format**: Use Skill as the primary distribution format
-3. **Convenient Installation Experience**: One-command installation via `npx discuss-skills install`
+3. **Convenient Installation Experience**: One-command installation via `npx discuss-for-specs install`
 4. **Low Maintenance Cost**: Centralized configuration management, adding new platforms only requires adding config entries
 
 ---
@@ -42,7 +42,7 @@ This project adopts spec-kit's cross-platform distribution architecture to provi
 | D2: Header Separation Design | Preserve `headers/<platform>.yaml` separation | [Architecture - D2](./3-architecture.md#d2-preserve-header-separation-design) | ✅ Active |
 | D3: Centralized Configuration | Create `config/platforms.yaml` | [Architecture - D3](./3-architecture.md#d3-adopt-centralized-configuration-management) | ✅ Active |
 | D4: Distribution Method | Distribute installation commands via npm | [Architecture - D4](./3-architecture.md#d4-distribute-installation-commands-via-npm) | ✅ Active |
-| D5: npm Package Design | Package name `discuss-skills`, Node.js implementation | [Architecture - D5](./3-architecture.md#d5-npm-package-design) | ✅ Active |
+| D5: npm Package Design | Package name `discuss-for-specs`, Node.js implementation | [Architecture - D5](./3-architecture.md#d5-npm-package-design) | ✅ Active |
 | D6: Pre-built Content | npm package includes pre-built SKILL.md files | [Architecture - D6](./3-architecture.md#d6-pre-built-content-in-npm-package) | ✅ Active |
 
 ### New Decisions (2026-01-28)
@@ -74,16 +74,16 @@ This project adopts spec-kit's cross-platform distribution architecture to provi
 
 ```bash
 # Install to current project (Cursor platform)
-npx discuss-skills install --platform cursor
+npx discuss-for-specs install --platform cursor
 
 # Install to specific directory (Claude Code platform)
-npx discuss-skills install --platform claude-code --target ~/my-project
+npx discuss-for-specs install --platform claude-code --target ~/my-project
 
 # View supported platforms
-npx discuss-skills platforms
+npx discuss-for-specs platforms
 
 # View version
-npx discuss-skills --version
+npx discuss-for-specs --version
 ```
 
 ---

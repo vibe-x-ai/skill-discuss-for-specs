@@ -200,21 +200,29 @@ AI ────►  "很好。对于读多的 API 缓存，你可能没考虑过
 
 ### 安装
 
+**方式一：使用 npx（无需安装）**
 ```bash
 # 一键安装（自动检测平台）
-npx discuss-skills install
+npx discuss-for-specs install
 
 # 或指定平台
-npx discuss-skills install --platform cursor
-npx discuss-skills install --platform claude-code
+npx discuss-for-specs install --platform cursor
+npx discuss-for-specs install --platform claude-code
+```
 
-# 安装到指定项目目录
-npx discuss-skills install --platform cursor --target ~/my-project
+**方式二：全局安装（推荐经常使用的用户）**
+```bash
+# 全局安装
+npm install -g discuss-for-specs
+
+# 然后直接使用
+discuss-for-specs install --platform claude-code
+discuss-for-specs install --platform cursor --target ~/my-project
 ```
 
 ### 前置要求
 
-- **Node.js** 16+（用于 npx）
+- **Node.js** 16+
 - **Python** 3.8+，安装 PyYAML（安装时自动检查）
 
 ### 开始讨论
@@ -228,7 +236,8 @@ Agent 将引导你进行结构化对话，自动追踪决策和进度。
 ### 卸载
 
 ```bash
-npx discuss-skills uninstall --platform cursor
+discuss-for-specs uninstall --platform cursor
+# 或: npx discuss-for-specs uninstall --platform cursor
 ```
 
 ---
@@ -296,14 +305,14 @@ cd .. && python -m pytest tests/
 
 ```bash
 # 列出支持的平台
-npx discuss-skills platforms
+npx discuss-for-specs platforms
 
 # 带选项安装
-npx discuss-skills install --platform cursor --skip-hooks
-npx discuss-skills install --platform claude-code --skip-skills
+npx discuss-for-specs install --platform cursor --skip-hooks
+npx discuss-for-specs install --platform claude-code --skip-skills
 
 # 卸载
-npx discuss-skills uninstall --platform cursor
+npx discuss-for-specs uninstall --platform cursor
 ```
 
 ---

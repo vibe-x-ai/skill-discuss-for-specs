@@ -30,7 +30,7 @@
 
 **Before:**
 ```
-📦 discuss-skills installer
+📦 discuss-for-specs installer
 
 Checking Python environment...
 Installing Skills...

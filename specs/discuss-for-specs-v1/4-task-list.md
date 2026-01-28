@@ -92,7 +92,7 @@ Based on [discuss-mode-optimization decisions](../.discuss/2026-01-28/discuss-mo
 
 | Item | Description | Status |
 |------|-------------|--------|
-| npm package name availability | Verify `discuss-skills` is available on npm | 🔴 TODO |
+| npm package name availability | Verify `discuss-for-specs` is available on npm | 🔴 TODO |
 | Claude Code header verification | Verified header file format | 🟢 Done |
 | Remove old Skills directories | Removed `discuss-coordinator` and `discuss-output` | 🟢 Done |
 

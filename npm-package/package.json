@@ -1,6 +1,6 @@
 {
-  "name": "discuss-skills",
-  "version": "0.1.0",
+  "name": "discuss-for-specs",
+  "version": "0.1.0-beta.1",
   "description": "Cross-platform skills and hooks for AI-powered discussion mode. Supports Claude Code and Cursor.",
   "keywords": [
     "claude-code",
@@ -8,7 +8,9 @@
     "ai-assistant",
     "skills",
     "hooks",
-    "discussion-mode"
+    "discussion-mode",
+    "specs",
+    "specification"
   ],
   "author": "zhouhongxuan",
   "license": "MIT",
@@ -21,7 +23,7 @@
     "url": "https://github.com/vibe-x-ai/skill-discuss-for-specs/issues"
   },
   "bin": {
-    "discuss-skills": "./bin/cli.js"
+    "discuss-for-specs": "./bin/cli.js"
   },
   "main": "./src/index.js",
   "type": "module",

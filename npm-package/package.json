@@ -1,6 +1,6 @@
 {
   "name": "@vibe-x/discuss-for-specs",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.0",
   "description": "Cross-platform skills and hooks for AI-powered discussion mode. Supports Claude Code and Cursor.",
   "keywords": [
     "claude-code",

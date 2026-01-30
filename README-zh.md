@@ -249,8 +249,7 @@ skill-discuss-for-specs/
 ├── skills/              # 📝 技能指令（供 AI 使用的 Markdown）
 │   └── discuss-for-specs/          # 单一合并的讨论技能
 ├── hooks/               # ⚡ 自动化脚本（Python）
-│   ├── file-edit/           # 文件编辑追踪 Hook
-│   ├── stop/                # 沉淀检测 Hook
+│   ├── stop/                # 沉淀检测 Hook（基于快照）
 │   └── common/              # 共享工具
 ├── npm-package/         # 📦 NPM 发布包
 ├── config/              # ⚙️ 配置模板
@@ -270,14 +269,15 @@ skill-discuss-for-specs/
 
 ## 🔧 配置
 
-配置存储在每个讨论目录的 `meta.yaml` 中。默认阈值：
+配置存储在 `.discuss/.snapshot.yaml` 中。默认阈值：
 
 ```yaml
+version: 1
 config:
-  stale_threshold: 3      # 轻柔提醒前的轮次数
+  stale_threshold: 3      # outline 变更几次后轻柔提醒
 ```
 
-更多配置选项详见 [工作原理](docs/HOW-IT-WORKS-zh.md#discussion-directory-structure)。
+更多配置选项详见 [工作原理](docs/HOW-IT-WORKS-zh.md#snapshotyaml)。
 
 ---
 

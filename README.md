@@ -251,8 +251,7 @@ skill-discuss-for-specs/
 ├── skills/              # 📝 Skill instructions (Markdown for AI)
 │   └── discuss-for-specs/          # Single merged discussion skill
 ├── hooks/               # ⚡ Automation scripts (Python)
-│   ├── file-edit/           # File edit tracking hook
-│   ├── stop/                # Precipitation check hook
+│   ├── stop/                # Precipitation check hook (snapshot-based)
 │   └── common/              # Shared utilities
 ├── npm-package/         # 📦 NPM distribution package
 ├── platforms/           # 🔌 Platform build scripts
@@ -273,14 +272,15 @@ skill-discuss-for-specs/
 
 ## 🔧 Configuration
 
-Configuration is stored in `meta.yaml` within each discussion directory. Default thresholds:
+Configuration is stored in `.discuss/.snapshot.yaml`. Default thresholds:
 
 ```yaml
+version: 1
 config:
-  stale_threshold: 3      # Rounds before gentle reminder
+  stale_threshold: 3      # Outline changes before gentle reminder
 ```
 
-For detailed configuration options, see [How It Works](docs/HOW-IT-WORKS.md#discussion-directory-structure).
+For detailed configuration options, see [How It Works](docs/HOW-IT-WORKS.md#snapshotyaml).
 
 ---
 

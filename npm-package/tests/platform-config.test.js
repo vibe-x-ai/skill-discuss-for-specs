@@ -14,6 +14,7 @@ import {
   getPlatformConfig,
   getSkillsDir,
   getSettingsPath,
+  platformSupportsStopHook,
 } from '../src/platform-config.js';
 
 
@@ -91,5 +92,22 @@ describe('getSettingsPath', () => {
     const result = getSettingsPath('cursor');
     const home = homedir();
     assert.strictEqual(result, join(home, '.cursor', 'hooks.json'));
+  });
+});
+
+
+describe('platformSupportsStopHook', () => {
+  test('returns true for claude-code (L2 platform)', () => {
+    assert.strictEqual(platformSupportsStopHook('claude-code'), true);
+  });
+
+  test('returns true for cursor (L2 platform)', () => {
+    assert.strictEqual(platformSupportsStopHook('cursor'), true);
+  });
+
+  test('returns false for unknown platform (assumed L1)', () => {
+    // Unknown platforms should be treated as L1 (no stop hook support)
+    assert.strictEqual(platformSupportsStopHook('kilocode'), false);
+    assert.strictEqual(platformSupportsStopHook('codex-cli'), false);
   });
 });

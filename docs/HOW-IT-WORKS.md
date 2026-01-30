@@ -8,7 +8,7 @@ This document explains the internal architecture and mechanisms of the Discussio
 
 ## Overview
 
-Discussion Mode uses a **Single-Skill + Hooks** architecture:
+Discussion Mode uses a **Single-Skill + Snapshot Hook** architecture:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -27,18 +27,47 @@ Discussion Mode uses a **Single-Skill + Hooks** architecture:
 │                              │                                   │
 │                              ▼                                   │
 │  ┌────────────────────────────────────────────────────────────┐ │
-│  │                         Hooks                               │ │
-│  │  ┌─────────────────────┐  ┌─────────────────────────────┐  │ │
-│  │  │  track_file_edit    │  │   check_precipitation       │  │ │
-│  │  │  (on file edit)     │  │   (on conversation end)     │  │ │
-│  │  └─────────────────────┘  └─────────────────────────────┘  │ │
+│  │                    Hook (L2 Platforms Only)                 │ │
+│  │  ┌─────────────────────────────────────────────────────┐   │ │
+│  │  │   check_precipitation (snapshot-based detection)     │   │ │
+│  │  │   (on conversation end - Stop hook)                  │   │ │
+│  │  └─────────────────────────────────────────────────────┘   │ │
 │  └────────────────────────────────────────────────────────────┘ │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-> **Note**: Previous versions used two separate Skills (`discuss-coordinator` + `discuss-output`). 
-> As of 2026-01-28, these have been merged into a single `discuss-for-specs` Skill.
-> See [Architecture Decision D7](../specs/discuss-for-specs-v1/3-architecture.md#d7-skill-architecture-merge).
+> **Note**: Previous versions used two hooks (`track_file_edit` + `check_precipitation`). 
+> As of 2026-01-30, this has been simplified to a single snapshot-based stop hook.
+> See [D01: Snapshot-Based Detection](../.discuss/2026-01-30/multi-agent-platform-support/decisions/D01-snapshot-based-detection.md).
+
+---
+
+## Two-Level Platform Architecture
+
+Platforms are classified into two capability levels based on hook support:
+
+| Level | Capability | Required Hooks | User Experience |
+|-------|------------|----------------|-----------------|
+| **L1** | Discussion facilitation | None | Complete discussion features, no automatic reminders |
+| **L2** | + Snapshot detection + Auto reminder | Stop only | Automatically detects and reminds about unprecipitated decisions |
+
+### Platform Distribution
+
+| Platform | Level | Reason |
+|----------|-------|--------|
+| Claude Code | L2 | Supports Stop hook |
+| Cursor | L2 | Supports stop hook |
+| Cline | L2 | Supports PostToolUse/TaskCancel |
+| Gemini CLI | L2 | Supports AfterAgent hook |
+| OpenCode | L2 | Supports task_complete hook |
+| Kilocode | L1 | No Hooks support |
+| Codex CLI | L1 | Only notify (not a real Hook) |
+| Windsurf | L1 | No Hooks support |
+| Roo Code | L1 | No Hooks support |
+| Trae | L1 | No Hooks support |
+
+> L1 platforms use additional Skill guidance to encourage proactive decision precipitation.
+> See [D05: L1 Skill Guidance](../.discuss/2026-01-30/multi-agent-platform-support/decisions/D05-l1-skill-guidance.md).
 
 ---
 
@@ -68,9 +97,9 @@ Discussion Mode uses a **Single-Skill + Hooks** architecture:
 
 ---
 
-## Hooks Architecture
+## Hooks Architecture (L2 Platforms)
 
-Hooks automate "process work" that doesn't require AI intelligence:
+Hooks automate "process work" that doesn't require AI intelligence.
 
 ### Design Principle
 
@@ -79,55 +108,67 @@ Hooks automate "process work" that doesn't require AI intelligence:
 | Work Type | Handler | Examples |
 |-----------|---------|----------|
 | Intelligence | AI Skill | Understanding problems, analyzing solutions, recognizing consensus |
-| Process | Python Hooks | Counting rounds, checking staleness, file scanning |
+| Process | Python Hooks | File state detection, staleness checking, reminder generation |
 
-### Hook 1: File Edit Tracking
-
-**Trigger**: After each file edit by AI
-- Claude Code: `PostToolUse` event (matcher: `Edit|Write|MultiEdit`)
-- Cursor: `afterFileEdit` event
-
-**Behavior**:
-1. Detect if edited file is in a `.discuss/` directory
-2. Determine file type (outline / decision / note)
-3. Update `meta.yaml` with file tracking info
-4. Update session file for round counting
-
-### Hook 2: Precipitation Check
+### Snapshot-Based Detection
 
 **Trigger**: When AI conversation ends
 - Claude Code: `Stop` event
 - Cursor: `stop` event
 
-**Behavior**:
-1. Check session file for outline updates
-2. If no outline updates → skip (not in discussion mode)
-3. If outline updated → check for stale decisions/notes
-4. Calculate: `current_round - last_updated_round`
-5. If exceeds threshold → remind user
-6. Clean up session file
+**Core Logic**:
+1. Scan `.discuss/` directory for active discussions (modified within 24h)
+2. Compare current file state with `.discuss/.snapshot.yaml`
+3. If `outline.md` mtime changed → `change_count++`
+4. If `decisions/` or `notes/` changed → `change_count = 0` (reset)
+5. Trigger reminder when `change_count >= threshold`
+6. Save updated snapshot
 
-### Session-Based Round Counting
-
-To ensure accurate round counting (one increment per conversation):
+**Flow Diagram**:
 
 ```
-.discuss/.sessions/
-├── claude-code/
-│   └── {sessionID}.json
-└── cursor/
-    └── {sessionID}.json
+Stop Hook Triggered
+        │
+        ▼
+┌─────────────────────┐
+│ Load .snapshot.yaml │
+└─────────────────────┘
+        │
+        ▼
+┌─────────────────────────────────┐
+│ Find active discussions (24h)   │
+└─────────────────────────────────┘
+        │
+        ▼
+┌─────────────────────────────────┐
+│ For each discussion:            │
+│  • Compare outline.md mtime     │
+│  • Compare decisions/ files     │
+│  • Compare notes/ files         │
+│  • Update change_count          │
+└─────────────────────────────────┘
+        │
+        ▼
+┌─────────────────────────────────┐
+│ change_count >= threshold?      │
+│  YES → Show reminder            │
+│  NO  → Allow continue           │
+└─────────────────────────────────┘
+        │
+        ▼
+┌─────────────────────────────────┐
+│ Save updated .snapshot.yaml     │
+└─────────────────────────────────┘
 ```
 
-Session file content:
-```json
-{
-  "session_id": "abc123",
-  "started_at": "2026-01-28T01:30:00Z",
-  "outline_updated": true,
-  "outline_paths": [".discuss/2026-01-28/topic/outline.md"]
-}
-```
+### Detection Parameters
+
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+| Detection window | 24 hours | Only check discussions modified within this window |
+| Tracking method | mtime | Use file modification time for change detection |
+| Suggest threshold | 3 | Suggest precipitation after 3 outline changes |
+| Force threshold | 6 | Force precipitation after 6 outline changes |
 
 ---
 
@@ -138,7 +179,6 @@ Each discussion creates a structured directory:
 ```
 .discuss/YYYY-MM-DD/topic-name/
 ├── outline.md          # Live progress tracking
-├── meta.yaml           # Metadata (fully automated by Hooks)
 ├── decisions/          # Precipitated decisions
 │   ├── D01-topic.md
 │   ├── D02-topic.md
@@ -158,8 +198,6 @@ Real-time tracking of discussion state:
 ```markdown
 # Discussion: Topic Name
 
-> Status: In Progress | Round: R[N] | Date: YYYY-MM-DD
-
 ## 🔵 Current Focus
 - Current question being discussed
 
@@ -175,39 +213,32 @@ Real-time tracking of discussion state:
 - (Rejected options with rationale)
 ```
 
-### meta.yaml
+### .snapshot.yaml
 
-Status tracking maintained **fully by Hooks** (zero agent burden):
+State tracking managed **by hooks** at `.discuss/.snapshot.yaml`:
 
 ```yaml
-# Basic info (auto-derived)
-topic: "topic-name"           # From directory name
-created: 2026-01-28
-
-# Round management (auto-updated)
-current_round: 5
-
-# Configuration
+# .discuss/.snapshot.yaml
+version: 1
 config:
-  stale_threshold: 3          # Remind if N rounds without update
+  stale_threshold: 3          # Suggest reminder after N outline changes
 
-# File tracking (auto-scanned)
-decisions:
-  - path: "decisions/D01-xxx.md"
-    name: "D01-xxx.md"
-    last_modified: "2026-01-28T01:30:00Z"
-    last_updated_round: 4
-
-notes:
-  - path: "notes/analysis.md"
-    name: "analysis.md"
-    last_modified: "2026-01-28T00:45:00Z"
-    last_updated_round: 2
+discussions:
+  "2026-01-30/topic-name":
+    outline:
+      mtime: 1706621400.0     # Unix timestamp
+      change_count: 2         # Outline changes without decision updates
+    decisions:
+      - name: "D01-xxx.md"
+        mtime: 1706620000.0
+    notes:
+      - name: "analysis.md"
+        mtime: 1706619000.0
 ```
 
-> **Note**: Previous versions required the AI agent to maintain meta.yaml. 
-> As of 2026-01-28, meta.yaml is fully automated by Hooks.
-> See [Architecture Decision D9](../specs/discuss-for-specs-v1/3-architecture.md#d9-metayaml-programmatic-automation).
+> **Note**: Previous versions used `meta.yaml` in each discussion directory.
+> As of 2026-01-30, all state tracking is consolidated in `.snapshot.yaml`.
+> See [D02: Remove meta.yaml](../.discuss/2026-01-30/multi-agent-platform-support/decisions/D02-remove-meta-yaml.md).
 
 ---
 
@@ -221,8 +252,12 @@ After installation, components are distributed as follows:
 ~/.discuss-for-specs/
 ├── hooks/                    # Python hook scripts
 │   ├── common/               # Shared utilities
-│   ├── file-edit/            # File edit tracking hook
+│   │   ├── snapshot_manager.py   # Snapshot state management
+│   │   ├── file_utils.py         # File operations
+│   │   ├── logging_utils.py      # Logging utilities
+│   │   └── platform_utils.py     # Platform detection
 │   └── stop/                 # Precipitation check hook
+│       └── check_precipitation.py
 └── logs/                     # Hook execution logs
     └── discuss-hooks-YYYY-MM-DD.log
 ```
@@ -265,22 +300,28 @@ Hooks log all operations for debugging:
 
 **Format**:
 ```
-2026-01-21 22:31:40 | INFO     | discuss-hooks | Hook Started: track_file_edit
-2026-01-21 22:31:40 | DEBUG    | discuss-hooks | Input Data: {"file_path": "..."}
-2026-01-21 22:31:40 | INFO     | discuss-hooks | Discussion detected: /path/to/.discuss/topic
-2026-01-21 22:31:40 | INFO     | discuss-hooks | Hook Ended: track_file_edit [SUCCESS]
+2026-01-30 22:31:40 | INFO     | discuss-hooks | Hook Started: check_precipitation
+2026-01-30 22:31:40 | DEBUG    | discuss-hooks | Loaded snapshot with 3 discussions
+2026-01-30 22:31:40 | DEBUG    | discuss-hooks | Found 1 active discussion(s)
+2026-01-30 22:31:40 | DEBUG    | discuss-hooks | Outline modified, change_count: 2 -> 3
+2026-01-30 22:31:40 | INFO     | discuss-hooks | Suggesting update: 1 stale item(s)
+2026-01-30 22:31:40 | INFO     | discuss-hooks | Hook Ended: check_precipitation [SUCCESS]
 ```
 
 ---
 
 ## Platform Support
 
-| Platform | Skills | Hooks | Status |
-|----------|--------|-------|--------|
-| Claude Code | ✅ | ✅ | Ready |
-| Cursor | ✅ | ✅ | Ready |
-| VS Code Copilot | ⏳ | ⏳ | Planned |
-| Windsurf | ⏳ | ⏳ | Planned |
+| Platform | Level | Skills | Hooks | Status |
+|----------|-------|--------|-------|--------|
+| Claude Code | L2 | ✅ | ✅ | Ready |
+| Cursor | L2 | ✅ | ✅ | Ready |
+| Cline | L2 | ✅ | ✅ | Planned |
+| Gemini CLI | L2 | ✅ | ✅ | Planned |
+| Kilocode | L1 | ✅ | - | Planned |
+| Codex CLI | L1 | ✅ | - | Planned |
+| Windsurf | L1 | ✅ | - | Planned |
+| Roo Code | L1 | ✅ | - | Planned |
 
 ---
 
@@ -289,8 +330,9 @@ Hooks log all operations for debugging:
 - [README](../README.md) - Quick start and installation
 - [AGENTS.md](../AGENTS.md) - Guidelines for AI agents
 - [Architecture Design](../specs/discuss-for-specs-v1/3-architecture.md) - Design decisions
-- [Discussion Records](./../.discuss/) - Historical discussions
+- [Multi-Agent Platform Support](../.discuss/2026-01-30/multi-agent-platform-support/outline.md) - Platform extension discussion
+- [Discussion Records](../.discuss/) - Historical discussions
 
 ---
 
-**Last Updated**: 2026-01-28
+**Last Updated**: 2026-01-30

@@ -163,12 +163,11 @@ describe('Installation utilities integration', () => {
     const destHooks = join(testDir, 'dest-platform', '.claude', 'hooks', 'discuss');
     
     // Create source structure (like npm-package/hooks/)
+    // Note: Since D01 decision, only stop hook exists (file-edit hook removed)
     mkdirSync(join(srcHooks, 'common'), { recursive: true });
-    mkdirSync(join(srcHooks, 'file-edit'), { recursive: true });
     mkdirSync(join(srcHooks, 'stop'), { recursive: true });
     
     writeFileSync(join(srcHooks, 'common', 'utils.py'), '# utils');
-    writeFileSync(join(srcHooks, 'file-edit', 'track.py'), '# track');
     writeFileSync(join(srcHooks, 'stop', 'check.py'), '# check');
     
     // Perform install (what installer.js does)
@@ -177,7 +176,6 @@ describe('Installation utilities integration', () => {
     
     // Verify all files copied
     assert.strictEqual(existsSync(join(destHooks, 'common', 'utils.py')), true);
-    assert.strictEqual(existsSync(join(destHooks, 'file-edit', 'track.py')), true);
     assert.strictEqual(existsSync(join(destHooks, 'stop', 'check.py')), true);
   });
 
@@ -199,5 +197,132 @@ describe('Installation utilities integration', () => {
     removeDirectory(installedHooks);
     
     assert.strictEqual(existsSync(installedHooks), false, 'Hooks should be removed after uninstall');
+  });
+});
+
+
+describe('L1 guidance injection logic', () => {
+  let testDir;
+
+  beforeEach(() => {
+    testDir = join(tmpdir(), `test-l1-injection-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    mkdirSync(testDir, { recursive: true });
+  });
+
+  afterEach(() => {
+    if (existsSync(testDir)) {
+      rmSync(testDir, { recursive: true, force: true });
+    }
+  });
+
+  test('L1 guidance file contains required sections', () => {
+    // Simulate reading L1 guidance file structure
+    const l1GuidanceContent = `## 📝 Precipitation Discipline
+
+### Proactive Documentation
+Don't wait to be reminded. After each round, ask yourself:
+- "Did we reach any consensus this round?"
+- "Have I documented confirmed decisions in \`decisions/\`?"
+
+### Self-Check Trigger
+Every 2-3 rounds of discussion, review:
+- If outline shows multiple ✅ Confirmed items but \`decisions/\` is empty → Create documents now
+- If a decision was confirmed 3+ rounds ago but not documented → Document it immediately
+
+### The Rule
+**Consensus reached = Decision documented.** 
+No delay, no exceptions.
+`;
+    
+    // Verify required sections exist
+    assert.ok(l1GuidanceContent.includes('Precipitation Discipline'), 'Should contain Precipitation Discipline section');
+    assert.ok(l1GuidanceContent.includes('Proactive Documentation'), 'Should contain Proactive Documentation section');
+    assert.ok(l1GuidanceContent.includes('Self-Check Trigger'), 'Should contain Self-Check Trigger section');
+    assert.ok(l1GuidanceContent.includes('The Rule'), 'Should contain The Rule section');
+  });
+
+  test('injection finds correct insertion point after Your Responsibilities', () => {
+    const skillContent = `# Test Skill
+
+## 🎯 Your Responsibilities
+- Responsibility 1
+- Responsibility 2
+
+## 📝 Next Section
+Some content here
+`;
+    
+    const responsibilitiesMarker = '## 🎯 Your Responsibilities';
+    const responsibilitiesIndex = skillContent.indexOf(responsibilitiesMarker);
+    
+    assert.ok(responsibilitiesIndex >= 0, 'Should find Your Responsibilities marker');
+    
+    // Find next section
+    const afterMarker = skillContent.substring(responsibilitiesIndex);
+    const nextSectionMatch = afterMarker.match(/\n(## |---)/);
+    
+    assert.ok(nextSectionMatch, 'Should find next section marker');
+    assert.ok(nextSectionMatch.index > 0, 'Next section should be after responsibilities');
+  });
+
+  test('simulated L1 guidance injection workflow', () => {
+    // Create SKILL.md with Your Responsibilities section
+    const skillPath = join(testDir, 'SKILL.md');
+    const skillContent = `# Discuss for Specs
+
+## Overview
+This skill helps with discussions.
+
+## 🎯 Your Responsibilities
+- Track discussion progress
+- Document decisions
+
+## 📝 Other Section
+More content here.
+`;
+    writeFileSync(skillPath, skillContent);
+
+    // Create L1 guidance content
+    const l1Guidance = `## 📝 Precipitation Discipline
+
+### Proactive Documentation
+Don't wait to be reminded.
+
+### The Rule
+**Consensus reached = Decision documented.**
+`;
+
+    // Simulate injection logic from installer.js
+    const originalContent = readFileSync(skillPath, 'utf-8');
+    const responsibilitiesMarker = '## 🎯 Your Responsibilities';
+    const responsibilitiesIndex = originalContent.indexOf(responsibilitiesMarker);
+    
+    if (responsibilitiesIndex >= 0) {
+      const afterMarker = originalContent.substring(responsibilitiesIndex);
+      const nextSectionMatch = afterMarker.match(/\n(## |---)/);
+      const injectionPoint = nextSectionMatch 
+        ? responsibilitiesIndex + nextSectionMatch.index + 1
+        : responsibilitiesIndex + afterMarker.length;
+      
+      const before = originalContent.substring(0, injectionPoint);
+      const after = originalContent.substring(injectionPoint);
+      const updatedContent = before + '\n\n' + l1Guidance + '\n\n' + after;
+      
+      writeFileSync(skillPath, updatedContent, 'utf-8');
+    }
+
+    // Verify injection
+    const result = readFileSync(skillPath, 'utf-8');
+    assert.ok(result.includes('Precipitation Discipline'), 'Injected content should contain Precipitation Discipline');
+    assert.ok(result.includes('Your Responsibilities'), 'Original content should be preserved');
+    assert.ok(result.includes('Other Section'), 'Following sections should be preserved');
+    
+    // Verify order: Your Responsibilities -> Precipitation Discipline -> Other Section
+    const respIndex = result.indexOf('Your Responsibilities');
+    const precipIndex = result.indexOf('Precipitation Discipline');
+    const otherIndex = result.indexOf('Other Section');
+    
+    assert.ok(respIndex < precipIndex, 'Precipitation Discipline should come after Your Responsibilities');
+    assert.ok(precipIndex < otherIndex, 'Other Section should come after Precipitation Discipline');
   });
 });

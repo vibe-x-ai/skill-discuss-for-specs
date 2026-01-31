@@ -25,12 +25,19 @@ This document provides guidance for AI agents working on this project.
 
 ```
 skill-discuss-for-specs/
-├── skills/              # 📝 Markdown instructions for AI
+├── skills/              # 📝 Skill source (Markdown for AI)
 │   └── discuss-for-specs/          # Unified discussion skill
+│       ├── SKILL.md                # Core skill content
+│       ├── headers/                # Platform-specific YAML headers
+│       └── references/             # Templates and reference docs
 ├── hooks/               # ⚡ Python automation scripts
 │   ├── stop/                # Precipitation checks (snapshot-based)
 │   └── common/              # Shared utilities
-├── platforms/           # 🔌 Platform-specific adaptations
+├── npm-package/         # 📦 NPM distribution (single build entry)
+│   ├── dist/                # Built skills for all platforms
+│   ├── hooks/               # Bundled hooks
+│   └── src/                 # CLI source code
+├── install.sh           # 🔌 Universal curl installer (auto-detect platform)
 ├── config/              # ⚙️ Configuration files
 ├── templates/           # 📄 File templates
 └── .discuss/            # 💬 Active discussions (dot-prefixed)
@@ -96,13 +103,45 @@ Templates for new discussions are in `templates/`:
 
 ### Building for Platforms
 
-```bash
-# Build for all platforms
-./scripts/build.sh
+All skills are built via npm-package (single build entry):
 
-# Install for Claude Code
-./platforms/claude-code/install.sh
+```bash
+# Build for all platforms (from npm-package directory)
+cd npm-package && npm run build
+
+# This generates:
+# npm-package/dist/claude-code/discuss-for-specs/
+# npm-package/dist/cursor/discuss-for-specs/
+# npm-package/dist/kilocode/discuss-for-specs/
+# npm-package/dist/opencode/discuss-for-specs/
+# npm-package/dist/codex/discuss-for-specs/
 ```
+
+### Installing (npm-based, with hooks)
+
+```bash
+# Auto-detect platform
+npx @vibe-x/discuss-for-specs install
+
+# Or specify platform
+npx @vibe-x/discuss-for-specs install --platform claude-code
+npx @vibe-x/discuss-for-specs install --platform cursor
+```
+
+### Installing (curl-based, skills only)
+
+```bash
+# Auto-detect platform
+curl -fsSL https://raw.githubusercontent.com/vibe-x-ai/skill-discuss-for-specs/main/install.sh | bash
+
+# Specify platform
+curl -fsSL https://raw.githubusercontent.com/vibe-x-ai/skill-discuss-for-specs/main/install.sh | bash -s -- -p cursor
+
+# List supported platforms
+curl -fsSL https://raw.githubusercontent.com/vibe-x-ai/skill-discuss-for-specs/main/install.sh | bash -s -- --list
+```
+
+> **Note**: curl installation only installs skills (no hooks). For L2 features (auto-reminders), use npm.
 
 ### Testing Changes
 

@@ -27,7 +27,7 @@ python3 -c "import yaml" && echo "PyYAML OK"
 
 **Objective**: Verify that the installation completes correctly.
 
-### Steps
+### Option A: npm-based Installation (L2 platforms with hooks)
 
 ```bash
 # 1. Install (specify your platform)
@@ -51,7 +51,21 @@ cat ~/.claude/settings.json | grep -A10 "hooks"
 # Expected: Stop hook configured
 ```
 
-### Expected Output
+### Option B: curl-based Installation (L1 platforms, skills only)
+
+```bash
+# 1. Install for Kilocode (or opencode, codex)
+curl -fsSL https://raw.githubusercontent.com/vibe-x-ai/skill-discuss-for-specs/main/platforms/kilocode/install.sh | bash
+
+# 2. Verify Skills installation
+ls -la ~/.kilocode/skills/
+# Expected: discuss-for-specs/ directory exists
+
+# 3. No hooks for L1 platforms
+# L1 platforms rely on skill guidance for manual decision precipitation
+```
+
+### Expected Output (npm-based)
 
 Installation should display:
 ```
@@ -272,14 +286,53 @@ rm .discuss/.snapshot.yaml
 
 ---
 
+## Scenario 6: L1 Platform Verification (Skills Only)
+
+**Objective**: Verify that L1 platforms (Kilocode, OpenCode, Codex CLI) work correctly without hooks.
+
+### Steps
+
+```bash
+# 1. Install via curl for L1 platform (e.g., kilocode)
+curl -fsSL https://raw.githubusercontent.com/vibe-x-ai/skill-discuss-for-specs/main/platforms/kilocode/install.sh | bash
+
+# 2. Verify skill files
+ls -la ~/.kilocode/skills/discuss-for-specs/
+# Expected: SKILL.md, references/ directory
+
+# 3. Check SKILL.md contains L1 guidance
+grep -l "L1" ~/.kilocode/skills/discuss-for-specs/SKILL.md
+# Expected: File found (L1 guidance is appended)
+```
+
+### Expected Behavior
+
+For L1 platforms:
+1. Skills are installed successfully
+2. SKILL.md includes L1-specific guidance encouraging manual decision precipitation
+3. No hooks are installed (no automatic reminders)
+4. Users must manually trigger decision precipitation
+
+### L1 vs L2 Comparison
+
+| Feature | L1 (Kilocode, OpenCode, Codex) | L2 (Claude Code, Cursor) |
+|---------|--------------------------------|--------------------------|
+| Skills | ✅ Installed | ✅ Installed |
+| Hooks | ❌ Not installed | ✅ Installed |
+| Auto-reminders | ❌ Manual only | ✅ Automatic |
+| Installation | curl (skills only) | npm (full) or curl |
+
+---
+
 ## Version History
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 0.4.0 | 2026-01-31 | Added L1 platform verification (Kilocode, OpenCode, Codex CLI), updated installation options with curl |
 | 0.3.0 | 2026-01-30 | Updated for snapshot-based detection, removed file-edit hook scenarios, simplified to single stop hook |
 | 0.2.0 | 2026-01-28 | Updated for merged skill (`discuss-for-specs`), new directory structure (`.discuss/`), session-based round counting |
 | 0.1.0 | 2026-01-27 | Initial verification guide |
 
 ---
 
-**Last Updated**: 2026-01-30
+**Last Updated**: 2026-01-31

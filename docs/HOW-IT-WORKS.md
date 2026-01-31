@@ -59,12 +59,12 @@ Platforms are classified into two capability levels based on hook support:
 | Cursor | L2 | Supports stop hook |
 | Cline | L2 | Supports PostToolUse/TaskCancel |
 | Gemini CLI | L2 | Supports AfterAgent hook |
-| OpenCode | L2 | Supports task_complete hook |
 | Kilocode | L1 | No Hooks support |
+| OpenCode | L1 | No Hooks support |
 | Codex CLI | L1 | Only notify (not a real Hook) |
-| Windsurf | L1 | No Hooks support |
-| Roo Code | L1 | No Hooks support |
-| Trae | L1 | No Hooks support |
+| Windsurf | - | No Hooks support (planned) |
+| Roo Code | - | No Hooks support (planned) |
+| Trae | - | No Hooks support (planned) |
 
 > L1 platforms use additional Skill guidance to encourage proactive decision precipitation.
 > See [D05: L1 Skill Guidance](../.discuss/2026-01-30/multi-agent-platform-support/decisions/D05-l1-skill-guidance.md).
@@ -316,12 +316,13 @@ Hooks log all operations for debugging:
 |----------|-------|--------|-------|--------|
 | Claude Code | L2 | ✅ | ✅ | Ready |
 | Cursor | L2 | ✅ | ✅ | Ready |
+| Kilocode | L1 | ✅ | - | Ready |
+| OpenCode | L1 | ✅ | - | Ready |
+| Codex CLI | L1 | ✅ | - | Ready |
 | Cline | L2 | ✅ | ✅ | Planned |
 | Gemini CLI | L2 | ✅ | ✅ | Planned |
-| Kilocode | L1 | ✅ | - | Planned |
-| Codex CLI | L1 | ✅ | - | Planned |
-| Windsurf | L1 | ✅ | - | Planned |
-| Roo Code | L1 | ✅ | - | Planned |
+| Windsurf | - | - | - | Planned |
+| Roo Code | - | - | - | Planned |
 
 ---
 

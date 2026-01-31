@@ -190,11 +190,37 @@ Use Discussion Mode whenever you need to clarify and refine ideas:
 - **Single-Skill Architecture**: Unified `discuss-for-specs` Skill with template separation for easy maintenance
 - **Intelligent Precipitation**: Automatic detection of unprecipitated decisions with configurable reminders
 - **Hook-Based Automation**: Process work (round counting, state checking) handled by Python scripts, not AI
-- **Multi-Platform Support**: Claude Code & Cursor (ready), more agents coming soon
+- **Multi-Platform Support**: Works across multiple AI coding assistants (see table below)
 - **Structured Tracking**: Problem lifecycle management, trend analysis, and convergence detection
 - **Cross-Platform Design**: Shared Skill content with platform-specific adaptations
 
-> **Note**: Currently supports **Claude Code** and **Cursor**. Support for additional AI coding agents (Windsurf, Cline, etc.) is actively being developed. Stay tuned for updates!
+---
+
+## 🔌 Platform Support
+
+| Platform | Status | Level | Install Command |
+|----------|:------:|:-----:|-----------------|
+| **Claude Code** | ✅ Ready | L2 | `npx @vibe-x/discuss-for-specs install --platform claude-code` |
+| **Cursor** | ✅ Ready | L2 | `npx @vibe-x/discuss-for-specs install --platform cursor` |
+| **Kilocode** | ✅ Ready | L1 | `npx @vibe-x/discuss-for-specs install --platform kilocode` |
+| **OpenCode** | ✅ Ready | L1 | `npx @vibe-x/discuss-for-specs install --platform opencode` |
+| **Codex CLI** | ✅ Ready | L1 | `npx @vibe-x/discuss-for-specs install --platform codex` |
+| Cline | 🔜 Planned | L2 | - |
+| Windsurf | 🔜 Planned | - | - |
+
+### What's the difference between L1 and L2?
+
+| Feature | L1 Platforms | L2 Platforms |
+|---------|:------------:|:------------:|
+| Discussion facilitation | ✅ | ✅ |
+| Progress tracking | ✅ | ✅ |
+| Decision precipitation | ✅ | ✅ |
+| **Auto-reminder hooks** | ❌ | ✅ |
+
+- **L2 platforms** (Claude Code, Cursor) support hooks that automatically remind you to precipitate decisions
+- **L1 platforms** (Kilocode, OpenCode, Codex) have full discussion features but require manual decision tracking
+
+> 💡 For detailed architecture and hook mechanisms, see [How It Works](docs/HOW-IT-WORKS.md).
 
 ---
 
@@ -202,30 +228,46 @@ Use Discussion Mode whenever you need to clarify and refine ideas:
 
 ### Installation
 
-**Option 1: Use npx (no install needed)**
+Choose the installation method that works best for you:
+
+#### Option 1: npx (Recommended - no install needed)
+
 ```bash
-# One-command install (auto-detects platform)
+# Auto-detect your platform
 npx @vibe-x/discuss-for-specs install
 
 # Or specify platform explicitly
-npx @vibe-x/discuss-for-specs install --platform cursor
 npx @vibe-x/discuss-for-specs install --platform claude-code
 ```
 
-**Option 2: Global install (recommended for frequent use)**
-```bash
-# Install globally
-npm install -g @vibe-x/discuss-for-specs
+#### Option 2: Global install (for frequent use)
 
-# Then use directly
-discuss-for-specs install --platform claude-code
-discuss-for-specs install --platform cursor --target ~/my-project
+```bash
+npm install -g @vibe-x/discuss-for-specs
+discuss-for-specs install --platform cursor
 ```
+
+#### Option 3: curl (lightweight, skills only)
+
+For environments without Node.js or when you only need the core skills:
+
+```bash
+# Auto-detect platform
+curl -fsSL https://raw.githubusercontent.com/vibe-x-ai/skill-discuss-for-specs/main/install.sh | bash
+
+# Or specify platform
+curl -fsSL https://raw.githubusercontent.com/vibe-x-ai/skill-discuss-for-specs/main/install.sh | bash -s -- -p cursor
+
+# List all supported platforms
+curl -fsSL https://raw.githubusercontent.com/vibe-x-ai/skill-discuss-for-specs/main/install.sh | bash -s -- --list
+```
+
+> ⚠️ **Note**: curl installation only installs skills (no hooks). For L2 features (auto-reminders), use npm.
 
 ### Requirements
 
-- **Node.js** 16+
-- **Python** 3.8+ with PyYAML (auto-checked during install)
+- **Node.js** 16+ (for npm installation)
+- **Python** 3.8+ with PyYAML (for hooks, auto-checked during install)
 
 ### Start a Discussion
 
@@ -233,13 +275,16 @@ Once installed, simply tell your AI:
 
 > "Enter discussion mode. I want to design [your topic]."
 
+Or in Chinese:
+
+> "进入讨论模式。我想讨论 [你的主题]。"
+
 The Agent will guide you through a structured conversation, tracking decisions and progress automatically.
 
 ### Uninstall
 
 ```bash
-discuss-for-specs uninstall --platform cursor
-# or: npx @vibe-x/discuss-for-specs uninstall --platform cursor
+npx @vibe-x/discuss-for-specs uninstall --platform cursor
 ```
 
 ---
@@ -248,16 +293,25 @@ discuss-for-specs uninstall --platform cursor
 
 ```
 skill-discuss-for-specs/
-├── skills/              # 📝 Skill instructions (Markdown for AI)
+├── skills/              # 📝 Skill source (Markdown for AI)
 │   └── discuss-for-specs/          # Single merged discussion skill
+│       ├── SKILL.md                # Core skill content
+│       ├── headers/                # Platform-specific YAML headers
+│       └── references/             # Templates and reference docs
 ├── hooks/               # ⚡ Automation scripts (Python)
 │   ├── stop/                # Precipitation check hook (snapshot-based)
 │   └── common/              # Shared utilities
-├── npm-package/         # 📦 NPM distribution package
-├── platforms/           # 🔌 Platform build scripts
+├── npm-package/         # 📦 NPM distribution package (single build entry)
+│   ├── dist/                # Built skills for all platforms
+│   ├── hooks/               # Bundled hooks (copied during build)
+│   └── src/                 # CLI source code
+├── install.sh           # 🔌 Universal curl installer (auto-detect platform)
 ├── config/              # ⚙️ Configuration templates
 └── .discuss/            # 💬 Discussion archives (examples)
 ```
+
+> **Note**: All skill builds are done via `npm-package/scripts/build.js`. 
+> The `install.sh` script downloads from `npm-package/dist/`.
 
 ---
 

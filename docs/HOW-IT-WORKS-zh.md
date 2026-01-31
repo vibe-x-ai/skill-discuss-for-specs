@@ -59,12 +59,12 @@
 | Cursor | L2 | 支持 stop hook |
 | Cline | L2 | 支持 PostToolUse/TaskCancel |
 | Gemini CLI | L2 | 支持 AfterAgent hook |
-| OpenCode | L2 | 支持 task_complete hook |
 | Kilocode | L1 | 无 Hook 支持 |
+| OpenCode | L1 | 无 Hook 支持 |
 | Codex CLI | L1 | 仅有 notify（不是真正的 Hook） |
-| Windsurf | L1 | 无 Hook 支持 |
-| Roo Code | L1 | 无 Hook 支持 |
-| Trae | L1 | 无 Hook 支持 |
+| Windsurf | - | 无 Hook 支持（计划中） |
+| Roo Code | - | 无 Hook 支持（计划中） |
+| Trae | - | 无 Hook 支持（计划中） |
 
 > L1 平台使用额外的 Skill 引导来鼓励主动沉淀决策。
 > 参见 [D05: L1 Skill 引导](../.discuss/2026-01-30/multi-agent-platform-support/decisions/D05-l1-skill-guidance.md)。
@@ -316,12 +316,13 @@ Hooks 记录所有操作用于调试：
 |------|------|--------|-------|------|
 | Claude Code | L2 | ✅ | ✅ | 就绪 |
 | Cursor | L2 | ✅ | ✅ | 就绪 |
+| Kilocode | L1 | ✅ | - | 就绪 |
+| OpenCode | L1 | ✅ | - | 就绪 |
+| Codex CLI | L1 | ✅ | - | 就绪 |
 | Cline | L2 | ✅ | ✅ | 计划中 |
 | Gemini CLI | L2 | ✅ | ✅ | 计划中 |
-| Kilocode | L1 | ✅ | - | 计划中 |
-| Codex CLI | L1 | ✅ | - | 计划中 |
-| Windsurf | L1 | ✅ | - | 计划中 |
-| Roo Code | L1 | ✅ | - | 计划中 |
+| Windsurf | - | - | - | 计划中 |
+| Roo Code | - | - | - | 计划中 |
 
 ---
 

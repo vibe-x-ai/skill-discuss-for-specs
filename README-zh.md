@@ -188,11 +188,37 @@ AI ────►  "很好。对于读多的 API 缓存，你可能没考虑过
 - **单一技能架构**：统一的 `discuss-for-specs` Skill，模板分离便于维护
 - **智能沉淀**：自动检测未沉淀决策，可配置提醒
 - **基于 Hook 的自动化**：流程工作（轮次计数、状态检查）由 Python 脚本处理，而非 AI
-- **多平台支持**：Claude Code 和 Cursor（已支持），更多 Agent 即将推出
+- **多平台支持**：支持多个 AI 编程助手（见下表）
 - **结构化追踪**：问题生命周期管理、趋势分析和收敛检测
 - **跨平台设计**：共享技能内容，平台特定适配
 
-> **说明**：目前支持 **Claude Code** 和 **Cursor**。对更多 AI 编程助手（Windsurf、Cline 等）的支持正在积极开发中，敬请期待！
+---
+
+## 🔌 平台支持
+
+| 平台 | 状态 | 级别 | 安装命令 |
+|------|:----:|:----:|----------|
+| **Claude Code** | ✅ 就绪 | L2 | `npx @vibe-x/discuss-for-specs install --platform claude-code` |
+| **Cursor** | ✅ 就绪 | L2 | `npx @vibe-x/discuss-for-specs install --platform cursor` |
+| **Kilocode** | ✅ 就绪 | L1 | `npx @vibe-x/discuss-for-specs install --platform kilocode` |
+| **OpenCode** | ✅ 就绪 | L1 | `npx @vibe-x/discuss-for-specs install --platform opencode` |
+| **Codex CLI** | ✅ 就绪 | L1 | `npx @vibe-x/discuss-for-specs install --platform codex` |
+| Cline | 🔜 计划中 | L2 | - |
+| Windsurf | 🔜 计划中 | - | - |
+
+### L1 和 L2 有什么区别？
+
+| 功能 | L1 平台 | L2 平台 |
+|------|:-------:|:-------:|
+| 讨论引导 | ✅ | ✅ |
+| 进度追踪 | ✅ | ✅ |
+| 决策沉淀 | ✅ | ✅ |
+| **自动提醒 Hooks** | ❌ | ✅ |
+
+- **L2 平台**（Claude Code、Cursor）支持 hooks，自动提醒你沉淀决策
+- **L1 平台**（Kilocode、OpenCode、Codex）拥有完整讨论功能，但需要手动追踪决策
+
+> 💡 详细架构和 Hook 机制请参阅 [工作原理](docs/HOW-IT-WORKS-zh.md)。
 
 ---
 
@@ -200,44 +226,63 @@ AI ────►  "很好。对于读多的 API 缓存，你可能没考虑过
 
 ### 安装
 
-**方式一：使用 npx（无需安装）**
+选择最适合你的安装方式：
+
+#### 方式一：npx（推荐 - 无需安装）
+
 ```bash
-# 一键安装（自动检测平台）
+# 自动检测平台
 npx @vibe-x/discuss-for-specs install
 
 # 或指定平台
-npx @vibe-x/discuss-for-specs install --platform cursor
 npx @vibe-x/discuss-for-specs install --platform claude-code
 ```
 
-**方式二：全局安装（推荐经常使用的用户）**
-```bash
-# 全局安装
-npm install -g @vibe-x/discuss-for-specs
+#### 方式二：全局安装（经常使用推荐）
 
-# 然后直接使用
-discuss-for-specs install --platform claude-code
-discuss-for-specs install --platform cursor --target ~/my-project
+```bash
+npm install -g @vibe-x/discuss-for-specs
+discuss-for-specs install --platform cursor
 ```
+
+#### 方式三：curl（轻量级，仅技能）
+
+适用于没有 Node.js 环境或只需要核心技能的场景：
+
+```bash
+# 自动检测平台
+curl -fsSL https://raw.githubusercontent.com/vibe-x-ai/skill-discuss-for-specs/main/install.sh | bash
+
+# 或指定平台
+curl -fsSL https://raw.githubusercontent.com/vibe-x-ai/skill-discuss-for-specs/main/install.sh | bash -s -- -p cursor
+
+# 列出所有支持的平台
+curl -fsSL https://raw.githubusercontent.com/vibe-x-ai/skill-discuss-for-specs/main/install.sh | bash -s -- --list
+```
+
+> ⚠️ **注意**：curl 安装仅安装技能（无 hooks）。如需 L2 功能（自动提醒），请使用 npm。
 
 ### 前置要求
 
-- **Node.js** 16+
-- **Python** 3.8+，安装 PyYAML（安装时自动检查）
+- **Node.js** 16+（npm 安装需要）
+- **Python** 3.8+，安装 PyYAML（hooks 需要，安装时自动检查）
 
 ### 开始讨论
 
 安装完成后，只需告诉你的 AI：
 
-> "进入讨论模式。我想设计 [你的主题]。"
+> "进入讨论模式。我想讨论 [你的主题]。"
+
+或英文：
+
+> "Enter discussion mode. I want to design [your topic]."
 
 Agent 将引导你进行结构化对话，自动追踪决策和进度。
 
 ### 卸载
 
 ```bash
-discuss-for-specs uninstall --platform cursor
-# 或: npx @vibe-x/discuss-for-specs uninstall --platform cursor
+npx @vibe-x/discuss-for-specs uninstall --platform cursor
 ```
 
 ---
@@ -246,15 +291,28 @@ discuss-for-specs uninstall --platform cursor
 
 ```
 skill-discuss-for-specs/
-├── skills/              # 📝 技能指令（供 AI 使用的 Markdown）
+├── skills/              # 📝 技能源码（供 AI 使用的 Markdown）
 │   └── discuss-for-specs/          # 单一合并的讨论技能
+│       ├── SKILL.md                # 核心技能内容
+│       ├── headers/                # 平台特定的 YAML 头
+│       └── references/             # 模板和参考文档
 ├── hooks/               # ⚡ 自动化脚本（Python）
 │   ├── stop/                # 沉淀检测 Hook（基于快照）
 │   └── common/              # 共享工具
-├── npm-package/         # 📦 NPM 发布包
+├── npm-package/         # 📦 NPM 发布包（唯一构建入口）
+│   ├── dist/                # 所有平台的构建产物
+│   ├── hooks/               # 打包的 hooks（构建时复制）
+│   └── src/                 # CLI 源码
+├── install.sh           # 🔌 通用 curl 安装脚本（自动检测平台）
 ├── config/              # ⚙️ 配置模板
 └── .discuss/            # 💬 讨论归档（示例）
 ```
+
+> **说明**：所有技能构建通过 `npm-package/scripts/build.js` 完成。
+> `install.sh` 脚本从 `npm-package/dist/` 下载资源。
+
+> **说明**：所有技能构建通过 `npm-package/scripts/build.js` 完成。
+> `platforms/` 目录只包含安装脚本，它们从 `npm-package/dist/` 下载资源。
 
 ---
 

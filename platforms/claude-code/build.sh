@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Build for Claude Code platform
+# Build for Claude Code platform (L2 - Skills + Hooks)
 #
 
 set -e
@@ -13,29 +13,19 @@ echo "Building for Claude Code..."
 
 # Clean build directory
 rm -rf "$BUILD_DIR"
-mkdir -p "$BUILD_DIR/discuss-coordinator"
-mkdir -p "$BUILD_DIR/discuss-output"
+mkdir -p "$BUILD_DIR/discuss-for-specs"
+mkdir -p "$BUILD_DIR/discuss-for-specs/references"
 
-# Build discuss-coordinator SKILL.md
-echo "  - Building discuss-coordinator/SKILL.md"
-cat "$PROJECT_ROOT/skills/discuss-coordinator/headers/claude-code.yaml" \
-    "$PROJECT_ROOT/skills/discuss-coordinator/SKILL.md" \
-    > "$BUILD_DIR/discuss-coordinator/SKILL.md"
-
-# Copy references
-if [ -d "$PROJECT_ROOT/skills/discuss-coordinator/references" ]; then
-    cp -r "$PROJECT_ROOT/skills/discuss-coordinator/references" "$BUILD_DIR/discuss-coordinator/"
-fi
-
-# Build discuss-output SKILL.md
-echo "  - Building discuss-output/SKILL.md"
-cat "$PROJECT_ROOT/skills/discuss-output/headers/claude-code.yaml" \
-    "$PROJECT_ROOT/skills/discuss-output/SKILL.md" \
-    > "$BUILD_DIR/discuss-output/SKILL.md"
+# Build discuss-for-specs SKILL.md
+echo "  - Building discuss-for-specs/SKILL.md"
+cat "$PROJECT_ROOT/skills/discuss-for-specs/headers/claude-code.yaml" \
+    "$PROJECT_ROOT/skills/discuss-for-specs/SKILL.md" \
+    > "$BUILD_DIR/discuss-for-specs/SKILL.md"
 
 # Copy references
-if [ -d "$PROJECT_ROOT/skills/discuss-output/references" ]; then
-    cp -r "$PROJECT_ROOT/skills/discuss-output/references" "$BUILD_DIR/discuss-output/"
-fi
+cp "$PROJECT_ROOT/skills/discuss-for-specs/references/decision-template.md" \
+   "$BUILD_DIR/discuss-for-specs/references/"
+cp "$PROJECT_ROOT/skills/discuss-for-specs/references/outline-template.md" \
+   "$BUILD_DIR/discuss-for-specs/references/"
 
 echo "✓ Claude Code build complete: $BUILD_DIR"

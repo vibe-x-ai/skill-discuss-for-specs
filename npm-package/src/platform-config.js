@@ -15,14 +15,40 @@ export const PLATFORMS = {
     configDir: '.claude',
     skillsDir: 'skills',
     settingsFile: 'settings.json',
-    hooksFormat: 'claude-code'
+    hooksFormat: 'claude-code',
+    level: 'L2'
   },
   'cursor': {
     name: 'Cursor',
     configDir: '.cursor',
     skillsDir: 'skills',
     settingsFile: 'hooks.json',
-    hooksFormat: 'cursor'
+    hooksFormat: 'cursor',
+    level: 'L2'
+  },
+  'kilocode': {
+    name: 'Kilocode',
+    configDir: '.kilocode',
+    skillsDir: 'skills',
+    settingsFile: null,
+    hooksFormat: null,
+    level: 'L1'
+  },
+  'opencode': {
+    name: 'OpenCode',
+    configDir: '.opencode',
+    skillsDir: 'skill',
+    settingsFile: null,
+    hooksFormat: null,
+    level: 'L1'
+  },
+  'codex': {
+    name: 'Codex CLI',
+    configDir: '.codex',
+    skillsDir: 'skills',
+    settingsFile: null,
+    hooksFormat: null,
+    level: 'L1'
   }
 };
 
@@ -92,16 +118,15 @@ export function getSettingsPath(platformId) {
 /**
  * Check if platform supports stop hook (L2 capability)
  * 
- * Currently all supported platforms (claude-code, cursor) support stop hook.
- * L1 platforms (without stop hook) will be added in the future.
+ * L2 platforms (claude-code, cursor) support stop hook.
+ * L1 platforms (kilocode, opencode, codex) do not have hooks.
  * 
  * @param {string} platformId - Platform ID
  * @returns {boolean} True if platform supports stop hook
  */
 export function platformSupportsStopHook(platformId) {
-  // Currently all supported platforms are L2 (support stop hook)
-  // Future L1 platforms (kilocode, codex-cli, etc.) will return false
-  return platformId === 'claude-code' || platformId === 'cursor';
+  const config = PLATFORMS[platformId];
+  return config?.level === 'L2';
 }
 
 /**
@@ -141,10 +166,17 @@ function generateCursorHooksConfig() {
  * Install hooks configuration for a platform
  * 
  * @param {string} platformId - Platform ID
+ * @returns {string|null} Settings path if configured, null if L1 platform (no hooks)
  */
 export function installHooksConfig(platformId) {
-  const settingsPath = getSettingsPath(platformId);
   const config = getPlatformConfig(platformId);
+  
+  // L1 platforms don't have hooks support
+  if (config.level === 'L1' || !config.hooksFormat) {
+    return null;
+  }
+  
+  const settingsPath = getSettingsPath(platformId);
 
   if (config.hooksFormat === 'claude-code') {
     // Claude Code: merge into existing settings.json
@@ -196,13 +228,20 @@ export function installHooksConfig(platformId) {
  * Remove hooks configuration for a platform
  * 
  * @param {string} platformId - Platform ID
+ * @returns {string|null} Settings path if configured, null if L1 platform (no hooks)
  */
 export function removeHooksConfig(platformId) {
-  const settingsPath = getSettingsPath(platformId);
   const config = getPlatformConfig(platformId);
+  
+  // L1 platforms don't have hooks support
+  if (config.level === 'L1' || !config.hooksFormat) {
+    return null;
+  }
+  
+  const settingsPath = getSettingsPath(platformId);
 
   if (!existsSync(settingsPath)) {
-    return;
+    return null;
   }
 
   try {

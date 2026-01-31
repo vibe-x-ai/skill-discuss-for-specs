@@ -10,9 +10,9 @@
 
 ### Phase 1: Skills-based Platforms (4 platforms)
 - [ ] Cline L2: SKILL.md + TaskComplete Hook
-- [ ] Kilocode L1: SKILL.md
-- [ ] OpenCode L1: SKILL.md
-- [ ] Codex CLI L1: SKILL.md
+- [x] Kilocode L1: SKILL.md ✅ (2026-01-31)
+- [x] OpenCode L1: SKILL.md ✅ (2026-01-31)
+- [x] Codex CLI L1: SKILL.md ✅ (2026-01-31)
 
 ### Phase 2: Custom Mode Platforms (Deferred)
 - [ ] Gemini CLI L2: Custom + AfterAgent Hook
@@ -21,7 +21,7 @@
 ### Core Implementation
 - [ ] Snapshot scheme (snapshot_manager.py)
 - [ ] Precipitation checker (check_precipitation.py)
-- [ ] SKILL.md templates
+- [x] SKILL.md templates ✅ (2026-01-31, for L1 platforms)
 - [ ] npm-package update
 
 ---

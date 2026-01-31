@@ -40,23 +40,65 @@ import {
 
 /**
  * List supported platforms
+ * @param {Object} options - Options
+ * @param {boolean} options.showStatus - Show detailed installation status
  */
-export function listPlatforms() {
+export function listPlatforms(options = {}) {
   newline();
-  console.log(colors.bold('Supported Platforms:'));
+  console.log(colors.bold('Supported Platforms'));
+  console.log(colors.dim('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'));
   newline();
   
   const detected = detectPlatform();
   
-  for (const [id, config] of Object.entries(PLATFORMS)) {
-    const status = detected.includes(id) 
-      ? colors.success('✓ detected') 
+  // Group platforms by level
+  const l2Platforms = Object.entries(PLATFORMS).filter(([, config]) => config.level === 'L2');
+  const l1Platforms = Object.entries(PLATFORMS).filter(([, config]) => config.level === 'L1');
+  
+  // L2 Platforms
+  console.log(colors.primary('  L2 Platforms') + colors.dim(' (Skills + Hooks - auto-reminder)'));
+  newline();
+  
+  for (const [id, config] of l2Platforms) {
+    const isDetected = detected.includes(id);
+    const status = isDetected 
+      ? colors.success('● detected') 
       : colors.dim('○ not found');
-    console.log(`  ${colors.bold(config.name)} ${colors.dim(`(${id})`)}`);
-    console.log(`    Status: ${status}`);
-    console.log(`    Config: ${colors.dim(`~/${config.configDir}/`)}`);
+    
+    console.log(`    ${colors.bold(config.name.padEnd(14))} ${colors.dim(id.padEnd(12))} ${status}`);
+    console.log(`      ${colors.dim(`~/${config.configDir}/${config.skillsDir}/`)}`);
     newline();
   }
+  
+  // L1 Platforms
+  console.log(colors.primary('  L1 Platforms') + colors.dim(' (Skills only - manual precipitation)'));
+  newline();
+  
+  for (const [id, config] of l1Platforms) {
+    const isDetected = detected.includes(id);
+    const status = isDetected 
+      ? colors.success('● detected') 
+      : colors.dim('○ not found');
+    
+    console.log(`    ${colors.bold(config.name.padEnd(14))} ${colors.dim(id.padEnd(12))} ${status}`);
+    console.log(`      ${colors.dim(`~/${config.configDir}/${config.skillsDir}/`)}`);
+    newline();
+  }
+  
+  // Summary
+  console.log(colors.dim('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━'));
+  
+  if (detected.length > 0) {
+    console.log(colors.success(`  ${detected.length} platform(s) detected: `) + 
+      detected.map(id => colors.bold(id)).join(', '));
+  } else {
+    console.log(colors.warning('  No platforms detected'));
+    console.log(colors.dim('  Install a supported AI assistant first, or use --platform flag'));
+  }
+  
+  newline();
+  console.log(colors.dim('  Usage: discuss-for-specs install [-p <platform>]'));
+  newline();
 }
 
 /**
@@ -93,10 +135,11 @@ export async function install(options = {}) {
     if (detected.length === 0) {
       error(
         'No supported platform detected',
-        'Install Claude Code or Cursor first, or use --platform flag'
+        'Install a supported AI assistant first, or use --platform flag.\n' +
+        '    Supported: claude-code, cursor, kilocode, opencode, codex'
       );
       throw new Error(
-        'No supported platform detected. Please install Claude Code or Cursor first, ' +
+        'No supported platform detected. Please install a supported AI assistant first, ' +
         'or specify a platform with --platform.'
       );
     }
@@ -233,7 +276,10 @@ export async function install(options = {}) {
   }
 
   // 6. Install Hooks (unless skipped) - hooks are always global
-  if (!options.skipHooks) {
+  // Note: L1 platforms don't have hooks support, skip for them
+  const isL2Platform = platformSupportsStopHook(targetPlatform);
+  
+  if (!options.skipHooks && isL2Platform) {
     newline();
     spinner = createSpinner('Installing Hooks...');
     spinner.start();
@@ -267,6 +313,11 @@ export async function install(options = {}) {
     spinner.start();
     installHooksConfig(targetPlatform);
     spinner.succeed('Platform hooks configured');
+  } else if (!options.skipHooks && !isL2Platform) {
+    // L1 platform - inform user that hooks are not applicable
+    newline();
+    info(`${colors.dim('Hooks not applicable for L1 platform (no auto-reminder)')}`);
+    info(`${colors.dim('Use "Precipitation Discipline" section in SKILL.md for manual reminders')}`);
   }
 
   // 7. Done - show completion box
@@ -274,7 +325,7 @@ export async function install(options = {}) {
   if (!options.skipSkills) {
     components.push(`Skills: ${getSkillsDir(targetPlatform, targetDir)}`);
   }
-  if (!options.skipHooks) {
+  if (!options.skipHooks && isL2Platform) {
     components.push(`Hooks: ${getHooksDir()}`);
     components.push(`Logs: ${getLogsDir()}`);
   }
@@ -284,7 +335,11 @@ export async function install(options = {}) {
     nextSteps.push(`Open project: ${targetDir}`);
   }
   nextSteps.push('Start a discussion with your AI assistant');
-  nextSteps.push('The hooks will automatically track your progress');
+  if (isL2Platform) {
+    nextSteps.push('The hooks will automatically track your progress');
+  } else {
+    nextSteps.push('Remember to document decisions (L1 platform - no auto-reminder)');
+  }
   
   showCompletionBox({ components, nextSteps });
 }
